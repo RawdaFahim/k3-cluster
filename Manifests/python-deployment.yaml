@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-web
+spec:
+  replicas: 2  # We want to run 2 replicas of the web app
+  selector:
+    matchLabels:
+      app: python-web  # The label used to identify pods
+  template:
+    metadata:
+      labels:
+        app: python-web
+    spec:
+      containers:
+        - name: python-web
+          image: tiangolo/uwsgi-nginx-flask:python3.8  # The image used for the container
+          ports:
+            - containerPort: 80  # Exposing port 80 on the container
