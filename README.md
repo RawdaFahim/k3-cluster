@@ -55,7 +55,7 @@ kubectl get nodes
 ````
 The command kubectl get nodes is used to list all the nodes in your Kubernetes cluster. When you run this command, it provides details about each node in the cluster, such as its name, status, roles, age, and version. The output should like this:
 
-![Alt text](Screenshots/sc2.png)
+![Alt text](Screenshots/cluster-health.png)
 
 ### 4. Create a simple web app deployment
 In this step, we will create a Kubernetes Deployment to deploy a simple Python web app with two replicas. The Manifests/python-deployment.yaml YAML configuration defines configuration defines the **Deployment** for the app.
@@ -83,3 +83,75 @@ In this step, we will create a Kubernetes Deployment to deploy a simple Python w
 kubectl apply -f python-deployment.yaml
 ```
 This will create a Deployment with two replicas of the Python web app, ensuring availability. The app will be running in the cluster, accessible on port 80 of each container in the pods.
+
+### 5. Verify the Deployment
+Once you have applied the Deployment, you can verify that your pods are running and that the Deployment was successful.
+
+#### To check the status of the deployment:
+```
+kubectl get deployments
+```
+This will show the list of deployments in your cluster and their current status, including the number of pods that are up and running. For example, you should see something like:
+![Alt text](Screenshots/deployment-sc.png)
+
+
+### 6. Create configmap and nginx deployment
+The config map will contain the needed configuration file that should be used by the nginx deployment. Hence, the configmap must be created before creating the nginx deployment
+
+```
+kubectl apply -f nginx-config.yaml
+kubectl apply -f nginx-deployment.yaml
+```
+
+### 7. Verify the deployment
+Nginx is exposed publicly via the node IP. To get the node IP:
+```
+kubectl get service
+```
+<table style="background-color: black; color: white; width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="color: #f4f4f4; padding: 8px; text-align: left;">NAME</th>
+      <th style="color: #f4f4f4; padding: 8px; text-align: left;">TYPE</th>
+      <th style="color: #f4f4f4; padding: 8px; text-align: left;">CLUSTER-IP</th>
+      <th style="color: #f4f4f4; padding: 8px; text-align: left;">EXTERNAL-IP</th>
+      <th style="color: #f4f4f4; padding: 8px; text-align: left;">PORT(S)</th>
+      <th style="color: #f4f4f4; padding: 8px; text-align: left;">AGE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="padding: 8px; color: #b5b5b5;">kubernetes</td>
+      <td style="padding: 8px; color: #b5b5b5;">ClusterIP</td>
+      <td style="padding: 8px; color: #b5b5b5;">10.43.0.1</td>
+      <td style="padding: 8px; color: #b5b5b5;">&lt;none&gt;</td>
+      <td style="padding: 8px; color: #b5b5b5;">443/TCP</td>
+      <td style="padding: 8px; color: #b5b5b5;">4h1m</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px; color: #b5b5b5;">nginx-service</td>
+      <td style="padding: 8px; color: #b5b5b5;">NodePort</td>
+      <td style="padding: 8px; color: #b5b5b5;">10.43.136.151</td>
+      <td style="padding: 8px; color: #b5b5b5;">&lt;none&gt;</td>
+      <td style="padding: 8px; color: #b5b5b5;">80:30080/TCP</td>
+      <td style="padding: 8px; color: #b5b5b5;">28m</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px; color: #b5b5b5;">python-web-app-service</td>
+      <td style="padding: 8px; color: #b5b5b5;">ClusterIP</td>
+      <td style="padding: 8px; color: #b5b5b5;">10.43.68.22</td>
+      <td style="padding: 8px; color: #b5b5b5;">&lt;none&gt;</td>
+      <td style="padding: 8px; color: #b5b5b5;">80/TCP</td>
+      <td style="padding: 8px; color: #b5b5b5;">28m</td>
+    </tr>
+  </tbody>
+</table>
+
+### Explanation:
+- The **`nginx-service`** is exposed using the **NodePort** type, making it accessible externally on port `30080`.
+- The **`python-web-app-service`** is an internal service exposed via **ClusterIP**, meaning it’s only accessible within the cluster.
+- The **`kubernetes`** service is the default cluster service.
+
+You can access it via the web browser by adding an entry of the service IP with the corresponding domain in the host file. The output should appear as follows:
+![Alt text](Screenshots/nginx-deployment.png)
+

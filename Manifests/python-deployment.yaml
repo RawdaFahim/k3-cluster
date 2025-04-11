@@ -17,3 +17,17 @@ spec:
           image: tiangolo/uwsgi-nginx-flask:python3.8  # The image used for the container
           ports:
             - containerPort: 80  # Exposing port 80 on the container
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-web-app-service
+spec:
+  selector:
+    app: python-web # Service selector to match the app label
+  ports:
+  - protocol: TCP
+    port: 80  # The port your service will expose
+    targetPort: 80  # Port to target on the container
+  type: ClusterIP  # Internal service within the cluster
