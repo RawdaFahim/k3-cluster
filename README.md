@@ -32,7 +32,8 @@ Follow these steps to get your Kubernetes cluster up and running:
 Install k3s on the server node. This will set up your Kubernetes master:
 
 ```bash
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--token <Secret> --secrets-encryption" \ K3S_ARGS="--audit-log-path=/var/log/k3s/audit.log" sh -
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--token <Secret> --secrets-encryption" \ 
+K3S_ARGS="--audit-log-path=/var/log/k3s/audit.log" sh -
 ```
 
 | Argument               | Description                                                                                           |
