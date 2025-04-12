@@ -7,7 +7,7 @@ This project demonstrates setting up a lightweight Kubernetes (k3s) cluster usin
 
 ---
 
-## 📌 Objective
+## Objective
 
 - Install and configure a k3s cluster (1 server, 1 agent)
 - Validate the cluster with `kubectl`
@@ -17,14 +17,14 @@ This project demonstrates setting up a lightweight Kubernetes (k3s) cluster usin
 
 ---
 
-# 🔧 Prerequisites
+#  Prerequisites
 
 Before you begin, please review the [installation requirements (https://docs.k3s.io/quick-start). 
 
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 Follow these steps to get your Kubernetes cluster up and running:
 
@@ -147,11 +147,45 @@ kubectl get service
   </tbody>
 </table>
 
-### Explanation:
+#### Explanation:
 - The **`nginx-service`** is exposed using the **NodePort** type, making it accessible externally on port `30080`.
 - The **`python-web-app-service`** is an internal service exposed via **ClusterIP**, meaning it’s only accessible within the cluster.
 - The **`kubernetes`** service is the default cluster service.
 
 You can access it via the web browser by adding an entry of the service IP with the corresponding domain in the host file. The output should appear as follows:
 ![Alt text](Screenshots/nginx-deployment.png)
+
+
+
+### 🔧 Troubleshooting
+Here are some helpful commands to troubleshoot errors 
+
+#### To view logs of k3 services
+```
+sudo journalctl -u k3s -f
+# or for agent:
+sudo journalctl -u k3s-agent -f
+```
+
+#### Check Node Status
+```
+kubectl get nodes
+````
+If nodes are NotReady, look at:
+```
+kubectl describe node <node-name>
+```
+#### Check Pod Status
+```
+kubectl get pods -A
+```
+Look for pods in CrashLoopBackOff, Pending, or Error states.
+Then describe the pod:
+```
+kubectl describe pod <pod-name> -n <namespace>
+# for specific container:
+kubectl logs <pod-name> -c <container-name> -n <namespace>
+```
+
+
 
