@@ -56,7 +56,7 @@ kubectl get nodes
 ````
 The command kubectl get nodes is used to list all the nodes in your Kubernetes cluster. When you run this command, it provides details about each node in the cluster, such as its name, status, roles, age, and version. The output should like this:
 
-![Alt text](Screenshots/cluster-health.png)
+![Alt text](Screenshots/cluster-health)
 
 ### 4. Create a simple web app deployment
 In this step, we will create a Kubernetes Deployment to deploy a simple Python web app with two replicas. The Manifests/python-deployment.yaml YAML configuration defines configuration defines the **Deployment** for the app.
@@ -92,8 +92,7 @@ Once you have applied the Deployment, you can verify that your pods are running 
 ```
 kubectl get deployments
 ```
-This will show the list of deployments in your cluster and their current status, including the number of pods that are up and running. For example, you should see something like:
-![Alt text](Screenshots/deployment-sc.png)
+This will show the list of deployments in your cluster and their current status, including the number of pods that are up and running. 
 
 
 ### 6. Create configmap and nginx deployment
