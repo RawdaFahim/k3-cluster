@@ -4,6 +4,7 @@
 # Introduction
 
 This project demonstrates setting up a lightweight Kubernetes (k3s) cluster using virtual machines, comprising a single server node and one agent node. A simple Python web application is deployed across two pods to demonstrate workload orchestration, with Nginx configured as a reverse proxy to manage and distribute incoming traffic effectively between the pods.
+
 ---
 
 ## Objective
