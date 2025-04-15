@@ -21,8 +21,7 @@ This project demonstrates setting up a lightweight Kubernetes (k3s) cluster usin
 
 #  Prerequisites
 
-Before you begin, please review the [installation requirements (https://docs.k3s.io/quick-start). 
-
+Before you begin, please review the [installation requirements] (https://docs.k3s.io/quick-start) and make sure to install ansible.
 
 ---
 
@@ -30,8 +29,8 @@ Before you begin, please review the [installation requirements (https://docs.k3s
 
 Follow these steps to get your Kubernetes cluster up and running:
 
-### 1. Install k3s on the Server Node
-Install k3s on the server node. This will set up your Kubernetes master:
+### 1. Install k3s on cluster
+To install k3, clo
 
 ```bash
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--token <Secret> --secrets-encryption" \ 
@@ -45,10 +44,6 @@ K3S_ARGS="--audit-log-path=/var/log/k3s/audit.log" sh -
 | `--audit-log-path`     | Defines the location of the audit logs. These logs are essential for security monitoring and troubleshooting. |
 
 
-### 2. Install k3s on the Agent Node
-```
-curl -sfL https://get.k3s.io | K3S_URL=https://<master-IP>:6443 K3S_TOKEN=<Secret> sh -
-```
 
 ### 3. Verify cluster setup
 On the master node, run the following command:

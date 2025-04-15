@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-web
+  namespace: istio-system
 spec:
   replicas: 2  # We want to run 2 replicas of the web app
   selector:
@@ -23,6 +24,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: python-web-app-service
+  namespace: istio-system
 spec:
   selector:
     app: python-web # Service selector to match the app label

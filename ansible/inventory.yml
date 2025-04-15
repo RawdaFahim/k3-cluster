@@ -1,0 +1,35 @@
+---
+k3s_cluster:
+  children:
+    server:
+      hosts:
+        192.168.64.55:
+    agent:
+      hosts:
+        192.168.64.56:
+
+
+  # Required Vars
+  vars:
+    ansible_port: 22
+    ansible_user: ubuntu
+    k3s_version: v1.30.2+k3s1
+    token: "RawdodasSecretCluster"
+    api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
+    extra_server_args: 
+      - "--secrets-encryption"
+      - "--audit-log-path=/var/log/k3s/audit.log"
+    # The token should be a random string of reasonable length. You can generate
+    # one with the following commands:
+    # - openssl rand -base64 64
+    # - pwgen -s 64 1
+    # You can use ansible-vault to encrypt this value / keep it secret.
+    # Or you can omit it if not using Vagrant and let the first server automatically generate one.
+
+
+    # Optional vars
+
+    # "--secrets-encryption --audit-log-path=/var/log/k3s/audit.log"
+    # extra_agent_args: ""
+    # cluster_context: k3s-ansible
+    # api_port: 8080
