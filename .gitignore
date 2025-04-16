@@ -1,1 +1,2 @@
 commands.sh
+ansible/playbooks/post-k3s-install.yml

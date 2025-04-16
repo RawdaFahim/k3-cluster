@@ -1,0 +1,16 @@
+---  
+- name: Post k3s install - Setup Istio and deploy manifests
+  hosts: server
+  become: yes
+  vars:
+    istio_version: "1.22.0"
+    istio_dir: "/tmp/istio-{{ istio_version }}"
+    ansible_roles_path: "{{ playbook_dir }}/../roles"
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  roles:
+    - role: "{{ playbook_dir }}/../roles/helm_setup"
+    - role: "{{ playbook_dir }}/../roles/istio_install"
+    - role: "{{ playbook_dir }}/../roles/grafana_setup"
+    - role: "{{ playbook_dir }}/../roles/deploy_manifests"
+    - role: "{{ playbook_dir }}/../roles/prometheus_setup"

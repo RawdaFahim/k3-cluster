@@ -1,0 +1,19 @@
+- name: Start Prometheus
+  shell: kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.21/samples/addons/prometheus.yaml
+  
+- name: Add Prometheus as Grafana datasource
+  command: >
+    curl -X POST http://{{ groups['server'][0] }}:30080/api/datasources
+    -u admin:admin
+    -H "Content-Type: application/json"
+    -d '{"name":"Prometheus","type":"prometheus","url":"http://prometheus.istio-system.svc.cluster.local:9090","access":"proxy","basicAuth":false,"isDefault":true}'
+
+
+- name: Import Grafana dashboard
+  command: >
+    curl -X POST http://{{ groups['server'][0] }}:30080/api/dashboards/import
+    -u admin:admin
+    -H Content-Type:application/json
+    -d @/tmp/grafana-dashboard.json
+  register: curl_output
+  failed_when: curl_output.rc != 0 or '"error"' in curl_output.stdout or '"message"' in curl_output.stdout

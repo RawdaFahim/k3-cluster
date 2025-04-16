@@ -67,6 +67,7 @@
       shell: |
         {{ istio_dir }}/bin/istioctl install \
           --set components.ingressGateways[0].name=istio-ingressgateway \
+          --set meshConfig.enablePrometheusMerge=true \
           --set components.ingressGateways[0].enabled=false -y
       args:
         executable: /bin/bash
@@ -88,7 +89,40 @@
         -f /home/ubuntu/istio-values.yaml
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  
 
+    - name: Copy grafana dashboard Json
+      copy:
+        src: "{{ playbook_dir }}/../grafana-dashboard.json"
+        dest: "/tmp/grafana-dashboard.json"
+
+    - name: Start prometheus
+      shell: |
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.21/samples/addons/prometheus.yaml
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+    - name: Add Grafana repo using Helm
+      command: >
+        helm repo add grafana https://grafana.github.io/helm-charts
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+    - name: Install Grafana using Helm
+      command: >
+        helm upgrade --install grafana grafana/grafana \
+          --namespace istio-system \
+          --set adminPassword='admin' \
+          --set service.type=ClusterIP \
+          --set service.port=3000 \
+          --set "grafana.ini.server.root_url=http://localhost/" \
+          --set "grafana.ini.server.http_port=3000"
+      args:
+        creates: /etc/helm/helmfile.yaml  # Modify if you have a specific check
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+
+    
     - name: Copy all manifest files to server
       copy:
         src: "{{ playbook_dir }}/../manifests/{{ item }}"
@@ -97,18 +131,17 @@
         - python-deployment.yaml
         - nginx-config.yaml
         - nginx-deployment.yaml
-        - istio-virtualservice.yaml
+        - virtualservice.yaml
         - istio-gateway.yaml
-
-      
+        - service_monitor.yaml
 
     - name: Apply manifest files
       shell: |
         kubectl apply -f python-deployment.yaml
         kubectl apply -f nginx-config.yaml 
         kubectl apply -f nginx-deployment.yaml
-        kubectl apply -f istio-virtualservice.yaml
         kubectl apply -f istio-gateway.yaml
+        kubectl apply -f virtualservice.yaml
       args:
         chdir: /home/ubuntu
       environment:
@@ -120,3 +153,35 @@
         kubectl rollout status deployment nginx-load-balancer -n istio-system
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+
+    - name: Add Prometheus as Grafana datasource
+      command: >
+        curl -X POST http://{{ groups['server'][0] }}:30080/api/datasources
+        -u admin:admin
+        -H "Content-Type: application/json"
+        -d '{"name":"Prometheus","type":"prometheus","url":"http://prometheus.istio-system.svc.cluster.local:9090","access":"proxy","basicAuth":false,"isDefault":true}'
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+
+
+    - name: Import Grafana dashboard
+      command: >
+        curl -X POST http://{{ groups['server'][0] }}:30080/api/dashboards/import
+        -u admin:admin
+        -H Content-Type:application/json
+        -d @/tmp/grafana-dashboard.json
+      register: curl_output
+      failed_when: curl_output.rc != 0 or '"error"' in curl_output.stdout or '"message"' in curl_output.stdout
+
+
+
+
+    # - name: Print Grafana API response
+    #   debug:
+    #     var: curl_output.stdout
+
+
+
+    

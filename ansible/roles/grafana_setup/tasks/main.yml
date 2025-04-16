@@ -1,0 +1,23 @@
+- name: Copy Grafana dashboard JSON
+  copy:
+    src: "{{ playbook_dir }}/../files/grafana-dashboard.json"
+    dest: /tmp/grafana-dashboard.json
+
+
+- name: Add Grafana Helm repo
+  command: helm repo add grafana https://grafana.github.io/helm-charts
+
+
+- name: Install Grafana
+  command: >
+    helm upgrade --install grafana grafana/grafana \
+      --namespace istio-system \
+      --set adminPassword='admin' \
+      --set service.type=ClusterIP \
+      --set service.port=3000 \
+      --set "grafana.ini.server.root_url=http://localhost/" \
+      --set "grafana.ini.server.http_port=3000"
+  args:
+    creates: /etc/helm/helmfile.yaml 
+
+

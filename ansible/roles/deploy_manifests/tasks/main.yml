@@ -1,0 +1,31 @@
+- name: Copy manifest files
+  copy:
+    src: "{{ playbook_dir }}/../manifests/{{ item }}"
+    dest: "/tmp/{{ item }}"
+  loop:
+    - python-deployment.yaml
+    - nginx-config.yaml
+    - nginx-deployment.yaml
+    - virtualservice.yaml
+    - istio-gateway.yaml
+
+- name: Apply manifests
+  shell: |
+    kubectl apply -f python-deployment.yaml
+    kubectl apply -f nginx-config.yaml
+    kubectl apply -f nginx-deployment.yaml
+    kubectl apply -f istio-gateway.yaml
+    kubectl apply -f virtualservice.yaml
+  args:
+    chdir: /tmp
+
+
+- name: Wait for app pods to be ready
+  shell: |
+    kubectl rollout status deployment istio-ingressgateway -n istio-system
+    kubectl rollout status deployment istiod -n istio-system
+
+
+# kubectl rollout status deployment nginx-load-balancer -n istio-system
+# kubectl rollout status deployment grafana -n istio-system
+
