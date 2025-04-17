@@ -1,0 +1,35 @@
+---
+
+- name: Add Datadog Helm repository
+  command: helm repo add datadog https://helm.datadoghq.com
+
+- name: Update Helm repositories
+  command: helm repo update
+
+- name: Copy Datadog values file to target
+  copy:
+    src: "{{ playbook_dir }}/../files/datadog-values.yaml"
+    dest: /tmp/datadog-values.yaml
+
+
+- name: Install Datadog Agent using Helm CLI
+  command: >
+    helm upgrade --install datadog datadog/datadog
+    --namespace istio-system
+    -f /tmp/datadog-values.yaml
+
+
+- name: Remove Datadog values file from target
+  file:
+    path: /tmp/datadog-values.yaml
+    state: absent
+
+# - name: Ensure Datadog Agent pod is running
+#   shell: |
+#     kubectl get pods -n istio-system -l app=datadog -o jsonpath="{.items[0].status.phase}"
+#   register: datadog_status
+
+# - name: Fail if Datadog Agent is not running
+#   fail:
+#     msg: "Datadog Agent pod is not running"
+#   when: datadog_status.stdout != "Running"

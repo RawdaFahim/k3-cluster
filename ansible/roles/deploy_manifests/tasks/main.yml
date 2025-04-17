@@ -8,10 +8,11 @@
     - nginx-deployment.yaml
     - virtualservice.yaml
     - istio-gateway.yaml
+    - python-app-with-apm.yaml
 
 - name: Apply manifests
   shell: |
-    kubectl apply -f python-deployment.yaml
+    kubectl apply -f python-app-with-apm.yaml
     kubectl apply -f nginx-config.yaml
     kubectl apply -f nginx-deployment.yaml
     kubectl apply -f istio-gateway.yaml

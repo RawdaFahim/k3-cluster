@@ -1,0 +1,34 @@
+# values.yaml
+datadog:
+  apiKey: sssss  # Replace with your actual Datadog API key
+  site: datadoghq.com  # Use this default or datadoghq.eu for Europe
+  clusterName: "default"
+  istio:
+    enabled: true
+
+
+  # Additional configurations (optional)
+  tags:
+    - env:production
+    - team:devops
+  logs:
+    enabled: true
+    containerCollectAll: true
+    containerCollectUsingFiles: true  
+
+
+apm:
+  enabled: true
+
+
+env:
+  - name: DD_PROFILING_ENABLED
+    value: "true"
+
+
+agents:
+  containers:
+    agent:
+      image:
+        name: "datadog/agent"
+        tag: "latest"

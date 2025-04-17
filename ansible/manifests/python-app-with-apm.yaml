@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-sample
+  namespace: istio-system
+spec:
+  replicas: 2  # We want to run 2 replicas of the web app
+  selector:
+    matchLabels:
+      app: python-sample  # The label used to identify pods
+  template:
+    metadata:
+      labels:
+        app: python-sample
+    spec:
+      containers:
+        - name: python-sample
+          image: rawda123/python-test-app:test  # Replace with your actual local image name
+          env: 
+            - name: DD_AGENT_HOST
+              value: "datadog"
+            - name: DD_TRACE_AGENT_PORT
+              value: "8126"
+            - name: DD_ENV
+              value: "production"
+            - name: DD_SERVICE
+              value: "python-sample-app"
+            - name: DD_VERSION
+              value: "1.0.0"
+            - name: DD_TRACE_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 80  # Exposing port 80 on the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-sample-app-service
+  namespace: istio-system
+spec:
+  selector:
+    app: python-sample # Service selector to match the app label
+  ports:
+  - protocol: TCP
+    port: 80  # The port your service will expose
+    targetPort: 80  # Port to target on the container
+  type: ClusterIP  # Internal service within the cluster

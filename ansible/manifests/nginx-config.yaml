@@ -9,7 +9,7 @@ data:
 
     http {
       upstream python-web-app {
-        server python-web-app-service.istio-system.svc.cluster.local:80;  # Points to the Python web app service
+        server python-sample-app-service.istio-system.svc.cluster.local:80;  # Points to the Python web app service
       }
 
       server {
