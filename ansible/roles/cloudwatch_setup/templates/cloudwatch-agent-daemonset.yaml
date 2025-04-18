@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cloudwatch-agent
+  namespace: amazon-cloudwatch
+spec:
+  selector:
+    matchLabels:
+      name: cloudwatch-agent
+  template:
+    metadata:
+      labels:
+        name: cloudwatch-agent
+    spec:
+      containers:
+        - name: cloudwatch-agent
+          image: amazon/cloudwatch-agent:latest
+          volumeMounts:
+            - name: cloudwatch-config
+              mountPath: /etc/cwagentconfig
+              subPath: cloudwatch-agent-config.json
+            - name: cloudwatch-cert
+              mountPath: /etc/amazon-cloudwatch-observability-agent-client-cert/tls-ca.crt
+              subPath: tls-ca.crt
+            - name: cloudwatch-cert
+              mountPath: /etc/amazon-cloudwatch-observability-agent-server-cert/server.crt
+              subPath: server-cert.pem
+            - name: cloudwatch-cert
+              mountPath: /etc/amazon-cloudwatch-observability-agent-server-cert/server.key
+              subPath: server-key.pem
+            - name: aws-credentials
+              mountPath: /root/.aws/credentials
+              subPath: credentials
+
+      volumes:
+        - name: cloudwatch-config
+          configMap:
+            name: cloudwatch-agent-config
+        - name: cloudwatch-cert
+          configMap:
+            name: cloudwatch-cert
+        - name: aws-credentials
+          secret:
+            secretName: cloudwatch-credentials

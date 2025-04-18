@@ -9,9 +9,9 @@
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   roles:
-    - role: "{{ playbook_dir }}/../roles/helm_setup"
-    - role: "{{ playbook_dir }}/../roles/istio_install"
-    - role: "{{ playbook_dir }}/../roles/grafana_setup"
-    - role: "{{ playbook_dir }}/../roles/deploy_manifests"
-    - role: "{{ playbook_dir }}/../roles/prometheus_setup"
-    - role: "{{ playbook_dir }}/../roles/datadog_setup"
+    - role: roles/helm_setup
+    - role: roles/istio_install
+    - role: roles/grafana_setup
+    - role: roles/deploy_manifests
+    - role: roles/prometheus_setup
+    - role: roles/datadog_setup

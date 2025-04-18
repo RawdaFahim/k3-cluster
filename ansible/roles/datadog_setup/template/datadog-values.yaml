@@ -1,6 +1,6 @@
 # values.yaml
 datadog:
-  apiKey: sssss  # Replace with your actual Datadog API key
+  apiKey: ss  # Replace with your actual Datadog API key
   site: datadoghq.com  # Use this default or datadoghq.eu for Europe
   clusterName: "default"
   istio:

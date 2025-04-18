@@ -1,0 +1,24 @@
+---
+- name: Create the amazon-cloudwatch namespace
+  command: kubectl create namespace amazon-cloudwatch
+
+
+- name: Create AWS credentials secret
+  shell: |
+    kubectl create secret generic cloudwatch-credentials \
+      --namespace=amazon-cloudwatch \
+      --from-literal=aws_access_key_id="{{ aws_secrets.aws_access_key_id }}" \
+      --from-literal=aws_secret_access_key="{{ aws_secrets.aws_secret_access_key }}"
+
+- name: Create the CloudWatch Agent ConfigMap
+  shell: |
+    echo "{{ lookup('template', 'cloudwatch-agent-configmap.yaml') }}" | kubectl create configmap cloudwatch-agent-config \
+      --namespace=amazon-cloudwatch \
+      --from-file=cloudwatch-agent-config=/dev/stdin
+
+
+- name: Create the CloudWatch Agent DaemonSet
+  shell: |
+    echo "{{ lookup('template', 'cloudwatch-agent-daemonset.yaml') }}" | kubectl apply -f -
+  become: yes
+

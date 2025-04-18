@@ -1,12 +1,10 @@
-- name: Copy Grafana dashboard JSON
-  copy:
-    src: "{{ playbook_dir }}/../files/grafana-dashboard.json"
-    dest: /tmp/grafana-dashboard.json
-
-
 - name: Add Grafana Helm repo
   command: helm repo add grafana https://grafana.github.io/helm-charts
 
+- name: Copy Grafana dashboard JSON
+  copy:
+    src: "{{ playbook_dir }}/../roles/grafana_setup/templates/grafana-dashboard.json"
+    dest: /tmp/grafana-dashboard.json
 
 - name: Install Grafana
   command: >
@@ -19,5 +17,7 @@
       --set "grafana.ini.server.http_port=3000"
   args:
     creates: /etc/helm/helmfile.yaml 
+
+
 
 

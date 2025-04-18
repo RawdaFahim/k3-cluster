@@ -1,6 +1,6 @@
 - name: Copy manifest files
   copy:
-    src: "{{ playbook_dir }}/../manifests/{{ item }}"
+    src: "{{ playbook_dir }}/../roles/deploy_manifests/files/{{ item }}"
     dest: "/tmp/{{ item }}"
   loop:
     - python-deployment.yaml
@@ -20,13 +20,26 @@
   args:
     chdir: /tmp
 
-
 - name: Wait for app pods to be ready
   shell: |
     kubectl rollout status deployment istio-ingressgateway -n istio-system
     kubectl rollout status deployment istiod -n istio-system
 
+- name: Get Kubernetes deployments using kubectl
+  command: kubectl get deployments -n istio-system -o json
+  register: result
+  changed_when: false
 
-# kubectl rollout status deployment nginx-load-balancer -n istio-system
-# kubectl rollout status deployment grafana -n istio-system
+# - name: Display Kubernetes deployments
+#   debug:
+#     var: result
+
+- name: Verify specific deployments are created
+  assert:
+    that:
+      - "'nginx-load-balancer' in result.stdout | from_json | json_query('items[].metadata.name')"
+      - "'python-sample' in result.stdout | from_json | json_query('items[].metadata.name')"
+    fail_msg: "One or more required deployments were not created"
+    success_msg: "All required deployments were successfully created"
+
 
