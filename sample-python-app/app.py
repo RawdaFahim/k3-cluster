@@ -1,11 +1,9 @@
 from flask import Flask
-from ddtrace import tracer, patch_all
+from ddtrace import patch_all
+import logging
 
-# Automatically patch supported libraries (Flask in this case)
-
-
-patch_all()
-ddtrace_logging_patch()
+# Patch all libraries and enable logging integration
+patch_all(logging=True)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

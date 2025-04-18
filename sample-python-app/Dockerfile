@@ -23,4 +23,4 @@ EXPOSE 80
 
 
 # Run the app
-CMD ["ddtrace-run", "python", "-m", "notes_app.app"]
+CMD ["ddtrace-run", "python", "app.py"]

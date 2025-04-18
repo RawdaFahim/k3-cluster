@@ -16,6 +16,7 @@ spec:
       containers:
         - name: python-sample
           image: rawda123/python-test-app:test  # Replace with your actual local image name
+          imagePullPolicy: Always
           env: 
             - name: DD_AGENT_HOST
               value: "datadog"
