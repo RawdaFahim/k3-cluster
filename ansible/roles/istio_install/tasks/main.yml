@@ -1,19 +1,54 @@
-# - name: Add Istio Helm repo
-#   command: helm repo add istio https://istio-release.storage.googleapis.com/charts
+# ------------------------------------------------------------------------------
+# Role: istio_install
+# Description:
+#   This role installs and configures the Istio service mesh on a k3s Kubernetes
+#   cluster. It ensures the control plane is installed using `istioctl` and sets
+#   up a custom Istio Ingress Gateway using Helm with a NodePort service type.
+#
+# Key Notes:
+#   - Helm Repo Setup:
+#       Adds the official Istio Helm repo and updates Helm's local repo cache.
+#
+#   - Namespace Creation:
+#       Creates `istio-system` namespace and enables automatic sidecar injection,
+#       which is essential for Istio to inject its proxies into application pods.
+#
+#   - Istio Download to /tmp:
+#       Istio is downloaded to `/tmp` to avoid polluting the system with
+#       permanent binaries. Since Ansible runs from a clean environment each time,
+#       using `creates:` ensures it's only downloaded once.
+#
+#   - Control Plane Installation:
+#       Installs Istio using `istioctl install` to configure the mesh itself.
+#       We set `meshConfig.enablePrometheusMerge=true` to unify Prometheus metrics.
+#       We explicitly disable the default ingress gateway here to deploy it manually
+#       with a custom config in the next step.
+#
+#   - Custom Ingress Gateway:
+#       Installs the Istio Ingress Gateway via Helm with a custom `istio-values.yaml`.
+#       This custom config uses a NodePort service instead of LoadBalancer.
+#       This is necessary because the environment is not running in the cloud,
+#       and no public IP would be assigned by a cloud load balancer. 
+#       Helm was used as it allows versioned and repeatable deployments with 
+#       clear parameter overrides, which is why it's used for gateway deployment.
+# ------------------------------------------------------------------------------
 
-# - name: Update Helm repos
-#   command: helm repo update
+- name: Add Istio Helm repo
+  command: helm repo add istio https://istio-release.storage.googleapis.com/charts
 
-# - name: Create istio-system namespace with injection enabled
-#   shell: |
-#     kubectl create namespace istio-system 
-#     kubectl label namespace istio-system istio-injection=enabled 
+- name: Update Helm repos
+  command: helm repo update
 
-# - name: Download Istio
-#   shell: curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_version }} sh -
-#   args:
-#     chdir: /tmp
-#     creates: "{{ istio_dir }}"
+- name: Create istio-system namespace with injection enabled
+  shell: |
+    kubectl create namespace istio-system 
+    kubectl label namespace istio-system istio-injection=enabled 
+
+- name: Download Istio
+  shell: curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_version }} sh -
+  args:
+    chdir: /tmp
+    creates: "{{ istio_dir }}"
     
 - name: Add istioctl to PATH
   shell: |
@@ -22,14 +57,14 @@
     chdir: /tmp
 
 
-# - name: Install Istio with custom ingress gateway configuration
-#   shell: |
-#     {{ istio_dir }}/bin/istioctl install \
-#       --set components.ingressGateways[0].name=istio-ingressgateway \
-#       --set meshConfig.enablePrometheusMerge=true \
-#       --set components.ingressGateways[0].enabled=false -y
-#   args:
-#     executable: /bin/bash
+- name: Install Istio with custom ingress gateway configuration
+  shell: |
+    {{ istio_dir }}/bin/istioctl install \
+      --set components.ingressGateways[0].name=istio-ingressgateway \
+      --set meshConfig.enablePrometheusMerge=true \
+      --set components.ingressGateways[0].enabled=false -y
+  args:
+    executable: /bin/bash
 
 - name: Install Istio Ingress Gateway using Helm and custom values
   kubernetes.core.helm:
@@ -37,16 +72,3 @@
     chart_ref: istio/gateway
     release_namespace: istio-system
     values: "{{ lookup('file', role_path + '/templates/istio-values.yaml') | from_yaml }}"
-
-
-# - name: Copy Istio values file
-#   copy:
-#     src: "{{ playbook_dir }}/../files/istio-values.yaml"
-#     dest: /tmp/istio-values.yaml
-#     remote_src: no
-
-# - name: Install Istio Ingress Gateway using Helm and custom values
-#   command: >
-#     helm install istio-ingressgateway istio/gateway
-#     -n istio-system
-#     -f /tmp/istio-values.yaml

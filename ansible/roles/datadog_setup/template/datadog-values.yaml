@@ -1,6 +1,42 @@
-# values.yaml
+# ------------------------------------------------------------------------------
+# Datadog Values Configuration (`datadog-values.yaml`)
+# Description: This YAML file contains the configuration options for the Datadog 
+# Agent, which is deployed in the Kubernetes cluster using the Datadog Helm chart.
+# The file configures the Datadog Agent to collect metrics, logs, and traces from 
+# the cluster and its applications.
+#
+# Key Configuration Features:
+#   - `datadog.apiKey`: Your Datadog API key. Replace with the actual key 
+#     to authenticate the Datadog Agent.
+#   - `datadog.site`: The Datadog site to use. The default is `datadoghq.com` 
+#     for the US region, but can be set to `datadoghq.eu` for the European region.
+#   - `datadog.clusterName`: The name of the cluster. The default value is "default".
+#   - `datadog.istio.enabled`: Enables Istio-specific metrics collection for 
+#     better visibility into Istio services.
+#
+# Additional Configurations:
+#   - `tags`: Adds custom tags for the Datadog Agent, such as `env:production` 
+#     and `team:devops`. Tags help organize and filter data in Datadog.
+#   - `logs.enabled`: Enables log collection from containers in the cluster.
+#   - `logs.containerCollectAll`: Collects logs from all containers.
+#   - `logs.containerCollectUsingFiles`: Collects logs using files from containers.
+#
+# APM Configuration:
+#   - `apm.enabled`: Enables APM (Application Performance Monitoring) for the 
+#     collection of traces and performance data from applications running in the cluster.
+#
+# Environment Variables:
+#   - `env`: Sets the `DD_PROFILING_ENABLED` environment variable to `true` to 
+#     enable profiling of the application, providing detailed performance insights
+#     such as CPU and memory profiling
+#
+# Agent Configuration:
+#   - `agents.containers.agent.image`: Defines the container image for the 
+#     Datadog Agent. The `latest` tag ensures the use of the most recent version.
+# ------------------------------------------------------------------------------
+
 datadog:
-  apiKey: ss  # Replace with your actual Datadog API key
+  apiKey: sample-key  # Replace with your actual Datadog API key
   site: datadoghq.com  # Use this default or datadoghq.eu for Europe
   clusterName: "default"
   istio:

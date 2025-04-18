@@ -1,3 +1,17 @@
+# ------------------------------------------------------------------------------
+# Role: prometheus_setup
+# Description: Sets up Prometheus and integrates it with Grafana. This includes:
+#   - Starting Prometheus using a raw YAML manifest from the Istio GitHub repository.
+#   - Adding Prometheus as a data source in Grafana, enabling Grafana to retrieve metrics from Prometheus.
+#   - Importing a pre-configured Grafana dashboard using an API call to the Grafana server.
+#
+# This role is essential for enabling observability within the k3s cluster by 
+# integrating Prometheus for metrics collection and Grafana for visualization.
+# Prometheus collects and stores metrics, while Grafana uses those metrics 
+# to provide real-time insights into the cluster and applications.
+# ------------------------------------------------------------------------------
+
+
 - name: Start Prometheus
   shell: kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.21/samples/addons/prometheus.yaml
   

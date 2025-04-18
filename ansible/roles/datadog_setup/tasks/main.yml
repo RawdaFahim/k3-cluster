@@ -1,4 +1,18 @@
 ---
+# ------------------------------------------------------------------------------
+# Role: datadog_setup
+# Description: Installs the Datadog Agent in the k3s cluster to collect metrics, 
+# logs, and traces for monitoring and observability. This role includes:
+#   - Adding the Datadog Helm repository to the Helm configuration.
+#   - Updating the Helm repositories to fetch the latest charts.
+#   - Installing the Datadog Agent using the Helm chart, with custom values 
+#     specified in the `datadog-values.yaml` file.
+#
+# This role is important for integrating Datadog into the cluster for full-stack 
+# observability. The Datadog Agent collects and sends data to the Datadog service,
+# enabling real-time monitoring of the infrastructure and applications.
+# ------------------------------------------------------------------------------
+
 
 - name: Add Datadog Helm repository
   command: helm repo add datadog https://helm.datadoghq.com

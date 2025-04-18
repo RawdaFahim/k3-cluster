@@ -1,3 +1,17 @@
+# Istio Ingress Gateway Custom Values
+# -----------------------------------
+# This file contains custom values used for configuring Istio's Ingress Gateway.
+# It is tailored for a non-cloud environment, where no load balancer or public IPs are available.
+
+# Service Configuration
+# ---------------------
+# This section defines the service type and the ports exposed by the Istio Ingress Gateway.
+# The 'NodePort' service type is used to make the Ingress Gateway accessible externally via
+# specific ports on all nodes in the Kubernetes cluster.
+#
+# Notes:
+# - 'NodePort' allows access to the Ingress Gateway via specific ports (30080 for HTTP, 30443 for HTTPS).
+
 service:
   type: NodePort
   ports:

@@ -1,3 +1,16 @@
+# ------------------------------------------------------------------------------
+# Role: helm_setup
+# Description: Installs Helm, the Kubernetes package manager, on the target host.
+# This includes:
+#   - Installing required APT dependencies
+#   - Adding Helm's official GPG key
+#   - Adding the Helm APT repository
+#   - Installing the Helm binary via apt
+#
+# This role is essential for deploying Helm charts later in the playbook, such as
+# Istio, Grafana, and Prometheus.
+# ------------------------------------------------------------------------------
+
 - name: Install apt dependencies
   apt:
     name:

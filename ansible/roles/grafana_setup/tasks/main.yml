@@ -1,3 +1,19 @@
+# ------------------------------------------------------------------------------
+# Role: grafana_setup
+# Description: Installs Grafana and configures it with a pre-configured dashboard.
+# This includes:
+#   - Adding the Grafana Helm repository to Helm.
+#   - Copying a pre-configured Grafana dashboard JSON file to the target machine.
+#   - Installing Grafana using Helm with custom configuration values:
+#       - Setting the admin password to 'admin'
+#       - Configuring the service type as ClusterIP and setting port 3000
+#       - Setting up the root URL and HTTP port for the Grafana server
+#
+# This role is essential for setting up Grafana for observability and monitoring.
+# The Grafana dashboard will be used to visualize metrics from the deployed applications.
+# ------------------------------------------------------------------------------
+
+
 - name: Add Grafana Helm repo
   command: helm repo add grafana https://grafana.github.io/helm-charts
 
