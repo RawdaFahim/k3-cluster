@@ -216,35 +216,3 @@ Grafana will be available at `http://<server-ip>:30080`. Log in using the creden
 
 
 
-### 🔧 Troubleshooting
-Here are some helpful commands to troubleshoot errors 
-
-#### To view logs of k3 services
-```
-sudo journalctl -u k3s -f
-# or for agent:
-sudo journalctl -u k3s-agent -f
-```
-
-#### Check Node Status
-```
-kubectl get nodes
-````
-If nodes are NotReady, look at:
-```
-kubectl describe node <node-name>
-```
-#### Check Pod Status
-```
-kubectl get pods -A
-```
-Look for pods in CrashLoopBackOff, Pending, or Error states.
-Then describe the pod:
-```
-kubectl describe pod <pod-name> -n <namespace>
-# for specific container:
-kubectl logs <pod-name> -c <container-name> -n <namespace>
-```
-
-
-
