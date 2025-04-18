@@ -79,7 +79,7 @@ kubectl get nodes
 ```
 The command kubectl get nodes is used to list all the nodes in your Kubernetes cluster. When you run this command, it provides details about each node in the cluster, such as its name, status, roles, age, and version. The output should like this:
 
-![Alt text](Screenshots/cluster-health)
+![Alt text](Screenshots/cluster-health.png)
 
 ## 3. Run the post-setup ansible playbook
 After installing k3s and starting your own cluster. Run the post-setup playbook for the rest of the project deployments:
