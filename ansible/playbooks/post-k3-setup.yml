@@ -1,29 +1,30 @@
----  
 # Post k3s install - Setup Istio and deploy manifests
-# ---------------------------------------------------
-# This playbook is executed after the initial setup of k3s cluster is complete.
-# It sets up various components necessary for running a sample application
-# with observability features.
+# ---------------------------------------------------------------------
+# This playbook runs after the k3s Kubernetes cluster has been installed.
+# It deploys an example microservice stack enhanced with observability tooling
+# using Helm for automation and configuration management.
 
-# Components Deployed:
-# - Istio (for service mesh and traffic management)
-# - A sample Python application with an APM agent for tracing
-# - Nginx as a reverse proxy for routing external traffic to internal services
-# - Prometheus and Grafana for metrics collection and visualization
-# - Datadog agent for enhanced monitoring and observability
+# Components Installed:
+# - Istio (service mesh for traffic control, observability, and security)
+# - A Python sample application instrumented with APM
+# - Nginx (acting as a reverse proxy )
+# - Grafana (metrics visualization via Prometheus data source)
+# - Datadog Agent (monitoring, logging, and tracing for full observability)
 
-# Playbook Assumptions:
-# - Target hosts have k3s installed and running
-# - KUBECONFIG is set to use the local k3s configuration
-# - Inventory file is updated with the servers'IP
+# Assumptions:
+# - The k3s cluster is already up and running
+# - Inventory specifies the correct IPs of target nodes
+# - Helm repositories are configured during setup
+# - All needed variables are correctly configured in the group_vars/all.yml
 
-# Roles used:
-# - helm_setup: Installs Helm
-# - istio_install: Installs Istio and sets up necessary CRDs
-# - grafana_setup: Installs Grafana via Helm, configures Prometheus as a data source, and imports a predefined dashboard
-# - deploy_manifests: Deploys application and Nginx reverse proxy
-# - prometheus_setup: Installs Prometheus for monitoring
-# - datadog_setup: Installs Datadog agent for observability
+# Roles:
+# - helm_setup: Installs and configures Helm CLI
+# - istio_install: Deploys Istio using Helm and sets up ingress gateway
+# - grafana_setup: Installs Grafana
+# - deploy_helm: Renders templates and deploys apps using a custom Helm chart
+# - datadog_setup: Installs the Datadog Agent with support for Istio and APM
+# - prometheus_setup: (optional) Installs Prometheus for metrics collection
+# - ngrok_setup: (optional) Exposes local services over secure tunnels
 
 - name: Post k3s install - Setup Istio and deploy manifests
   hosts: server

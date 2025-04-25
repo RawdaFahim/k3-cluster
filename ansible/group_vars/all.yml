@@ -1,6 +1,6 @@
 
 # ==== Kubernetes namespace ====
-k8s_namespace: istio-system
+k3s_namespace: istio-system
 
 
 # ==== App deployments ====

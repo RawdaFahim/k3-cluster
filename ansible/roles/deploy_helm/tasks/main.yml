@@ -5,12 +5,10 @@
 #       - Python application with APM agent
 #       - Nginx reverse proxy
 #       - Istio Gateway and VirtualService configuration
-#   - Using the Helm module to install and configure resources declaratively.
+#   - Using the Helm module to install and configure resources.
 #   - Waiting for Istio components to become ready.
-#   - Verifying that the required deployments (`nginx-load-balancer` and `python-sample`) are successfully created.
+#   - Verifying that the required deployments for nginx and python app are successfully created.
 #
-# This role replaces manual kubectl manifest application with a Helm-based
-# approach for more modular, reusable, and version-controlled deployments.
 # ------------------------------------------------------------------------------
 
 - name: Sync Helm chart directory to remote
@@ -24,7 +22,7 @@
 - name: Debug variables
   debug:
     msg:
-      - "k8s_namespace: {{ k8s_namespace }}"
+      - "k3s_namespace: {{ k3s_namespace }}"
       - "python_app.service_name: {{ python_app.service_name }}"
       - "nginx_app.service_name: {{ nginx_app.service_name }}"
 
@@ -32,7 +30,7 @@
 - name: Deploy application using Helm chart
   shell: |
     helm upgrade -i --reset-values \
-      --set global.namespace={{ k8s_namespace }} \
+      --set global.namespace={{ k3s_namespace }} \
       --set global.label.python_app_service={{ python_app.service_name }} \
       --set global.label.nginx_load_balancer={{ nginx_app.service_name }} \
       full-helm-deployment /tmp/helm-deployment
@@ -42,12 +40,12 @@
 
 - name: Wait for app pods to be ready
   shell: |
-    kubectl rollout status deployment {{ istio.ingress_gateway.name }} -n {{ k8s_namespace }}
-    kubectl rollout status deployment istiod -n {{ k8s_namespace }}
+    kubectl rollout status deployment {{ istio.ingress_gateway.name }} -n {{ k3s_namespace }}
+    kubectl rollout status deployment istiod -n {{ k3s_namespace }}
 
 
 - name: Get Kubernetes deployments using kubectl
-  command: kubectl get deployments -n {{ k8s_namespace }} -o json
+  command: kubectl get deployments -n {{ k3s_namespace }} -o json
   register: result
   changed_when: false
 
@@ -55,9 +53,6 @@
   set_fact:
     deployments: "{{ result.stdout | from_json | json_query('items[].metadata.name') }}"
 
-- name: Debug nginx service name
-  debug:
-    var: nginx_app.service_name
 
 - name: Verify specific deployments are created
   assert:

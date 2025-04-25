@@ -1,37 +1,25 @@
 # ------------------------------------------------------------------------------
 # Role: istio_install
 # Description:
-#   This role installs and configures the Istio service mesh on a k3s Kubernetes
-#   cluster. It ensures the control plane is installed using `istioctl` and sets
-#   up a custom Istio Ingress Gateway using Helm with a NodePort service type.
-#
-# Key Notes:
-#   - Helm Repo Setup:
-#       Adds the official Istio Helm repo and updates Helm's local repo cache.
-#
-#   - Namespace Creation:
-#       Creates `istio-system` namespace and enables automatic sidecar injection,
-#       which is essential for Istio to inject its proxies into application pods.
-#
-#   - Istio Download to /tmp:
-#       Istio is downloaded to `/tmp` to avoid polluting the system with
-#       permanent binaries. Since Ansible runs from a clean environment each time,
-#       using `creates:` ensures it's only downloaded once.
-#
-#   - Control Plane Installation:
-#       Installs Istio using `istioctl install` to configure the mesh itself.
-#       We set `meshConfig.enablePrometheusMerge=true` to unify Prometheus metrics.
-#       We explicitly disable the default ingress gateway here to deploy it manually
-#       with a custom config in the next step.
-#
-#   - Custom Ingress Gateway:
-#       Installs the Istio Ingress Gateway via Helm with a custom `istio-values.yaml`.
-#       This custom config uses a NodePort service instead of LoadBalancer.
-#       This is necessary because the environment is not running in the cloud,
-#       and no public IP would be assigned by a cloud load balancer. 
-#       Helm was used as it allows versioned and repeatable deployments with 
-#       clear parameter overrides, which is why it's used for gateway deployment.
+#   Installs and configures Istio service mesh on k3s Kubernetes cluster.
+#   This includes both control plane installation via `istioctl` and a custom 
+#   Ingress Gateway deployed via Helm with a NodePort service.
+
+# Tasks Performed:
+#   - Adds the official Istio Helm repository and updates the repo cache
+#   - Creates the target namespace (e.g., `istio-system`) with automatic sidecar injection
+#   - Downloads the specified version of Istio into `/tmp` to avoid cluttering the system
+#   - Installs Istio control plane using `istioctl`, with Prometheus metrics enabled
+#     and the default ingress gateway explicitly disabled
+#   - Renders a custom Helm values file (`ingress-values.yaml`) using a Jinja2 template
+#   - Installs a NodePort-based Ingress Gateway via Helm using the rendered values file
+
+# Notes:
+#   - The custom NodePort Ingress Gateway is necessary in environments without cloud
+#     load balancers (e.g., on-prem or local VMs).
+#   - The rendered `ingress-values.yaml` file is stored temporarily in `/tmp` on the host.
 # ------------------------------------------------------------------------------
+
 
 - name: Add Istio Helm repo
   command: helm repo add istio https://istio-release.storage.googleapis.com/charts
@@ -39,10 +27,10 @@
 - name: Update Helm repos
   command: helm repo update
 
-- name: Create {{ k8s_namespace }} namespace with injection enabled
+- name: Create {{ k3s_namespace }} namespace with injection enabled
   shell: |
-    kubectl create namespace {{ k8s_namespace }} 
-    kubectl label namespace {{ k8s_namespace }} istio-injection=enabled 
+    kubectl create namespace {{ k3s_namespace }} 
+    kubectl label namespace {{ k3s_namespace }} istio-injection=enabled 
 
 - name: Download Istio
   shell: curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_version }} sh -
@@ -85,16 +73,7 @@
   kubernetes.core.helm:
     name: "{{ istio.ingress_gateway.name }}"
     chart_ref: istio/gateway
-    release_namespace: "{{ k8s_namespace }}"
+    release_namespace: "{{ k3s_namespace }}"
     values_files:
       - /tmp/ingress-values.yaml
-
-
-
-# - name: Install Istio Ingress Gateway using Helm and custom values
-#   kubernetes.core.helm:
-#     name: istio-ingressgateway
-#     chart_ref: istio/gateway
-#     release_namespace: istio-system
-#     values: "{{ lookup('file', role_path + '/templates/istio-values.yaml') | from_yaml }}"
 

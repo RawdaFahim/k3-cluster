@@ -1,6 +1,6 @@
 apiVersion: v2
 name: Post-Cluster Deployment
-description: "Umbrella chart for Python + Nginx + (later Istio, Prometheus…)"
+description: "Umbrella chart for deploying sample python app, nginx as a reverse proxy and istio gateway and virtual service"
 type: application
 version: 0.1.0
 dependencies:

@@ -6,8 +6,7 @@
 # the cluster and its applications.
 #
 # Key Configuration Features:
-#   - `datadog.apiKey`: Your Datadog API key. Replace with the actual key 
-#     to authenticate the Datadog Agent.
+#   - `datadog.apiKey`: Your Datadog API key. 
 #   - `datadog.site`: The Datadog site to use. The default is `datadoghq.com` 
 #     for the US region, but can be set to `datadoghq.eu` for the European region.
 #   - `datadog.clusterName`: The name of the cluster. The default value is "default".
@@ -33,12 +32,16 @@
 # Agent Configuration:
 #   - `agents.containers.agent.image`: Defines the container image for the 
 #     Datadog Agent. The `latest` tag ensures the use of the most recent version.
+#
+#
+# Notes:
+# All values can be changed from group_vars/all.yml
 # ------------------------------------------------------------------------------
 
 datadog:
   apiKey: "{{ datadog.api_key }}" 
   site: "{{ datadog.site | default('datadoghq.com') }}"  
-  clusterName: "{{ k8s_namespace }}"
+  clusterName: "{{ k3s_namespace }}"
   istio:
     enabled: "{{ datadog.istio_enabled }}"
 

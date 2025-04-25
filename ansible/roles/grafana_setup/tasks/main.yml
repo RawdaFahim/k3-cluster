@@ -5,9 +5,11 @@
 #   - Adding the Grafana Helm repository to Helm.
 #   - Copying a pre-configured Grafana dashboard JSON file to the target machine.
 #   - Installing Grafana using Helm with custom configuration values:
-#       - Setting the admin password to 'admin'
-#       - Configuring the service type as ClusterIP and setting port 3000
+#       - Setting the admin password 
+#       - Configuring the service type and port
 #       - Setting up the root URL and HTTP port for the Grafana server
+#  Note:
+#  All configured values are set in group_vars/all.yml
 #
 # This role is essential for setting up Grafana for observability and monitoring.
 # The Grafana dashboard will be used to visualize metrics from the deployed applications.
@@ -25,7 +27,7 @@
 - name: Install Grafana
   command: >
     helm upgrade --install grafana grafana/grafana \
-      --namespace {{ k8s_namespace }} \
+      --namespace {{ k3s_namespace }} \
       --set adminPassword='{{ grafana.service.admin_password }}' \
       --set service.type={{ grafana.service.type }} \
       --set service.port={{ grafana.service.port }} \
