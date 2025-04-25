@@ -1,0 +1,49 @@
+
+# ==== Kubernetes namespace ====
+k8s_namespace: istio-system
+
+
+# ==== App deployments ====
+python_app:
+  name: python-sample
+  service_name: python-app-service
+
+nginx_app:
+  name: nginx-load-balancer 
+  service_name: nginx-service
+
+# ==== Datadog ====
+datadog:
+  api_key: "test"   # Replace with your actual Datadog API key
+  site: "datadoghq.com"              # Datadog site (e.g., 'datadoghq.com' or 'datadoghq.eu')
+  clusterName: "default"             # Kubernetes cluster name
+  istio_enabled: true                # Enable Istio metrics collection
+  env: "production"                  # Environment tag (can be production, staging, etc.)
+  team: "devops"                     # Team tag for Datadog (can be devops, backend, etc.)
+  logs_enabled: true                 # Enable log collection
+  container_collect_all: true        # Collect logs from all containers
+  container_collect_using_files: true # Collect logs using files from containers
+  apm_enabled: true                  # Enable APM (Application Performance Monitoring)
+  profiling_enabled: "true"          # Enable profiling for performance insights
+  agent_image_name: "datadog/agent"  # Datadog Agent container image name
+  agent_image_tag: "latest"          # Datadog Agent container image tag (latest, etc.)
+# ==== Istio ====
+istio: 
+  version: "1.22.0"
+  ingress_gateway:
+    name: istio-ingressgateway 
+    service:
+      type: NodePort
+      ports:
+        - port: 80
+          targetPort: 80
+          nodePort: 30080
+          name: http
+
+# ==== Grafana ====
+grafana: 
+  service: 
+    type: ClusterIP
+    port: 3000
+    url: http://localhost/
+    admin_password: admin

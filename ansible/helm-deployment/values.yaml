@@ -1,0 +1,58 @@
+global:
+  namespace: istio-system
+  port:
+    python_app_port: 80
+    nginx_load_balancer: 80
+  label:
+    python_app_service: python-app-service
+    nginx_load_balancer: nginx-service
+
+
+
+
+sample-python-app:
+  label: 
+    app: python-sample
+  replicaCount: 2
+  image:
+    repository: rawda123/python-test-app
+    tag: test
+    pullPolicy: Always
+  env:
+    DD_AGENT_HOST: datadog
+    DD_TRACE_AGENT_PORT: "8126"
+    DD_ENV: production
+    DD_SERVICE: python-sample-app
+    DD_VERSION: "1.0.0"
+    DD_TRACE_ENABLED: "true"
+  service:
+    protocol: TCP
+    type: ClusterIP
+
+
+
+nginx-load-balancer:
+  label:
+    app: nginx-load-balancer 
+  replicaCount: 1
+  image:
+    repository: nginx
+    tag: latest
+  service:
+    protocol: TCP
+    type: ClusterIP
+
+
+istio-deployment:
+  service:
+    protocol_name: http
+    protocol: HTTP
+    port: 80
+    allowed_hosts: "*"
+  gateway_name: nginx-gateway
+  grafana:
+    url: grafana.istio-system.svc.cluster.local
+    port: 3000
+  prefix: 
+    grafana: /
+    nginx: /nginx

@@ -1,0 +1,29 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: istio-virtualservice
+  namespace: {{ .Values.global.namespace }}
+spec:
+  hosts:
+  - "{{ .Values.service.allowed_hosts }}"
+  gateways:
+  - {{ .Values.gateway_name }} 
+  http:
+  - match:
+    - uri:
+        prefix: {{ .Values.prefix.nginx }} 
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Values.global.label.nginx_load_balancer }}.{{ .Values.global.namespace }}.svc.cluster.local
+        port:
+          number: {{ .Values.global.port.nginx_load_balancer }}
+  - match:
+    - uri:
+        prefix: {{ .Values.prefix.grafana }} 
+    route:
+    - destination:
+        host: {{ .Values.grafana.url }} 
+        port:
+          number: {{ .Values.grafana.port }} 

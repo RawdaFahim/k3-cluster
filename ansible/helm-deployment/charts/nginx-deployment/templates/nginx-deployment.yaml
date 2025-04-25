@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.label.app }} 
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.label.app }} 
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.label.app }}   
+    spec:
+      containers:
+      - name: nginx
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  
+        ports:
+        - containerPort: {{ .Values.global.port.nginx_load_balancer }}
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf  
+          subPath: nginx.conf  
+      volumes:
+      - name: nginx-config  
+        configMap:
+          name: nginx-config  
+

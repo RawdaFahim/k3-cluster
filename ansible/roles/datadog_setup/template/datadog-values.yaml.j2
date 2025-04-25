@@ -36,35 +36,31 @@
 # ------------------------------------------------------------------------------
 
 datadog:
-  apiKey: sample-key  # Replace with your actual Datadog API key
-  site: datadoghq.com  # Use this default or datadoghq.eu for Europe
-  clusterName: "default"
+  apiKey: "{{ datadog.api_key }}" 
+  site: "{{ datadog.site | default('datadoghq.com') }}"  
+  clusterName: "{{ k8s_namespace }}"
   istio:
-    enabled: true
-
+    enabled: "{{ datadog.istio_enabled }}"
 
   # Additional configurations (optional)
   tags:
-    - env:production
-    - team:devops
+    - env: "{{ datadog.env }}"
+    - team: "{{ datadog.team }}"
   logs:
-    enabled: true
-    containerCollectAll: true
-    containerCollectUsingFiles: true  
-
+    enabled: "{{ datadog.logs_enabled }}"
+    containerCollectAll: "{{ datadog.container_collect_all }}"
+    containerCollectUsingFiles: "{{ datadog.container_collect_using_files }}"  
 
 apm:
-  enabled: true
-
+  enabled: "{{ datadog.apm_enabled }}"
 
 env:
   - name: DD_PROFILING_ENABLED
-    value: "true"
-
+    value: "{{ datadog.profiling_enabled  }}"
 
 agents:
   containers:
     agent:
       image:
-        name: "datadog/agent"
-        tag: "latest"
+        name: "{{ datadog.agent_image_name | default('datadog/agent') }}"
+        tag: "{{ datadog.agent_image_tag | default('latest') }}"

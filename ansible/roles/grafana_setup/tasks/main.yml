@@ -25,12 +25,12 @@
 - name: Install Grafana
   command: >
     helm upgrade --install grafana grafana/grafana \
-      --namespace istio-system \
-      --set adminPassword='admin' \
-      --set service.type=ClusterIP \
-      --set service.port=3000 \
-      --set "grafana.ini.server.root_url=http://localhost/" \
-      --set "grafana.ini.server.http_port=3000"
+      --namespace {{ k8s_namespace }} \
+      --set adminPassword='{{ grafana.service.admin_password }}' \
+      --set service.type={{ grafana.service.type }} \
+      --set service.port={{ grafana.service.port }} \
+      --set "grafana.ini.server.root_url={{ grafana.service.url }}" \
+      --set "grafana.ini.server.http_port={{ grafana.service.port }}"
   args:
     creates: /etc/helm/helmfile.yaml 
 

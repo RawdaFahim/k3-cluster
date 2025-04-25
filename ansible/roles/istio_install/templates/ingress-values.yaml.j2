@@ -10,16 +10,13 @@
 # specific ports on all nodes in the Kubernetes cluster.
 #
 # Notes:
-# - 'NodePort' allows access to the Ingress Gateway via specific ports (30080 for HTTP, 30443 for HTTPS).
+# - 'NodePort' allows access to the Ingress Gateway via specific ports (30080 for HTTP).
 
 service:
-  type: NodePort
+  type: {{ istio.ingress_gateway.service.type }}
   ports:
-    - port: 80
-      targetPort: 80
-      nodePort: 30080
-      name: http
-    - port: 443
-      targetPort: 8443
-      nodePort: 30443
-      name: https
+    - port: {{ istio.ingress_gateway.service.ports[0].port }}
+      targetPort: {{ istio.ingress_gateway.service.ports[0].targetPort }}
+      nodePort: {{ istio.ingress_gateway.service.ports[0].nodePort }}
+      name: {{ istio.ingress_gateway.service.ports[0].name }}
+

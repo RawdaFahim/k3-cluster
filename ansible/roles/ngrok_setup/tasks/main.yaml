@@ -1,0 +1,42 @@
+
+---
+
+- name: Get the NGROK_AUTHTOKEN from Ansible Vault
+  ansible.builtin.set_fact:
+    ngrok_authtoken: "{{ lookup('ansible.builtin.vault', 'NGROK_AUTHTOKEN') }}"
+
+- name: Create Kubernetes secret for ngrok token
+  kubernetes.core.k8s:
+    state: present
+    name: ngrok-secret
+    namespace: istio-system
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: ngrok-secret
+        namespace: istio-system
+      data:
+        NGROK_AUTHTOKEN: "{{ ngrok_authtoken | b64encode }}"
+  
+- name: Verify that the secret was created
+  kubernetes.core.k8s_facts:
+    namespace: istio-system
+  register: secret_facts
+
+- name: Display ngrok secret details
+  debug:
+    msg: "Secret info: {{ secret_facts.resources }}"
+
+
+- name: Get logs from ngrok pod
+  command: kubectl logs ngrok-tunnel-7fb77c949d-2fnrk -n istio-system -c ngrok
+  register: ngrok_logs
+
+- name: Extract ngrok URL from logs
+  set_fact:
+    ngrok_url: "{{ ngrok_logs.stdout | regex_search('https://[a-z0-9-]+\\.ngrok-free\\.app') }}"
+
+- name: Display ngrok URL
+  debug:
+    msg: "The ngrok URL is: {{ ngrok_url }}"

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sample-python-app
+description: "Deploy Python sample with APM"
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

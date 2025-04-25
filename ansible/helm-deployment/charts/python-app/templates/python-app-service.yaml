@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.global.label.python_app_service }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  selector:
+    app: {{ .Values.label.app }} 
+  ports:
+  - protocol: {{ .Values.service.protocol }}    
+    port: {{ .Values.global.port.python_app_port }}
+    targetPort: {{ .Values.global.port.python_app_port }}
+  type: {{ .Values.service.type }}  

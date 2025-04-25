@@ -1,0 +1,15 @@
+apiVersion: v2
+name: Post-Cluster Deployment
+description: "Umbrella chart for Python + Nginx + (later Istio, Prometheus…)"
+type: application
+version: 0.1.0
+dependencies:
+  - name: sample-python-app
+    version: 0.1.0
+    repository: "file://charts/python-app"
+  - name: nginx-load-balancer
+    version: 0.1.0
+    repository: "file://charts/nginx-deployment"
+  - name: istio-deployment
+    version: 0.1.0
+    repository: "file://charts/istio-deployment"

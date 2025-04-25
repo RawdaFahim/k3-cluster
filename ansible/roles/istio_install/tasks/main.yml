@@ -39,10 +39,10 @@
 - name: Update Helm repos
   command: helm repo update
 
-- name: Create istio-system namespace with injection enabled
+- name: Create {{ k8s_namespace }} namespace with injection enabled
   shell: |
-    kubectl create namespace istio-system 
-    kubectl label namespace istio-system istio-injection=enabled 
+    kubectl create namespace {{ k8s_namespace }} 
+    kubectl label namespace {{ k8s_namespace }} istio-injection=enabled 
 
 - name: Download Istio
   shell: curl -L https://istio.io/downloadIstio | ISTIO_VERSION={{ istio_version }} sh -
@@ -60,15 +60,41 @@
 - name: Install Istio with custom ingress gateway configuration
   shell: |
     {{ istio_dir }}/bin/istioctl install \
-      --set components.ingressGateways[0].name=istio-ingressgateway \
+      --set components.ingressGateways[0].name={{ istio.ingress_gateway.name }}  \
       --set meshConfig.enablePrometheusMerge=true \
       --set components.ingressGateways[0].enabled=false -y
   args:
     executable: /bin/bash
 
-- name: Install Istio Ingress Gateway using Helm and custom values
+
+
+- name: Template values file for ingress
+  template:
+    src: ingress-values.yaml.j2
+    dest: /tmp/ingress-values.yaml
+    
+- name: Show rendered Helm values
+  command: cat /tmp/ingress-values.yaml
+  register: rendered_values
+
+- name: Debug rendered values
+  debug:
+    msg: "{{ rendered_values.stdout }}"
+
+- name: Deploy IngressGateway via Helm
   kubernetes.core.helm:
-    name: istio-ingressgateway
+    name: "{{ istio.ingress_gateway.name }}"
     chart_ref: istio/gateway
-    release_namespace: istio-system
-    values: "{{ lookup('file', role_path + '/templates/istio-values.yaml') | from_yaml }}"
+    release_namespace: "{{ k8s_namespace }}"
+    values_files:
+      - /tmp/ingress-values.yaml
+
+
+
+# - name: Install Istio Ingress Gateway using Helm and custom values
+#   kubernetes.core.helm:
+#     name: istio-ingressgateway
+#     chart_ref: istio/gateway
+#     release_namespace: istio-system
+#     values: "{{ lookup('file', role_path + '/templates/istio-values.yaml') | from_yaml }}"
+

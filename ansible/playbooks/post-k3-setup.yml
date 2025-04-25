@@ -29,7 +29,7 @@
   hosts: server
   become: yes
   vars:
-    istio_version: "1.22.0"
+    istio_version: "{{ istio.version }}"
     istio_dir: "/tmp/istio-{{ istio_version }}"
     ansible_roles_path: "{{ playbook_dir }}/../roles"
   environment:
@@ -38,6 +38,7 @@
     - role: roles/helm_setup
     - role: roles/istio_install
     - role: roles/grafana_setup
-    - role: roles/deploy_manifests
-    - role: roles/prometheus_setup
+    - role: roles/deploy_helm
     - role: roles/datadog_setup
+    # - role: roles/prometheus_setup
+    # - role: roles/ngrok_setup

@@ -21,18 +21,26 @@
   command: helm repo update
 
 
-- name: Install Datadog Agent via Helm (using Ansible module)
+
+- name: Render the Datadog values file
+  template:
+    src: template/datadog-values.yaml.j2
+    dest: /tmp/datadog-values.yaml
+    mode: '0644'
+
+- name: Install Datadog Agent via Helm
   kubernetes.core.helm:
     name: datadog
     chart_ref: datadog/datadog
-    release_namespace: istio-system
-    values: "{{ lookup('file', 'template/datadog-values.yaml') | from_yaml }}"
-    state: present
+    release_namespace: "{{ k8s_namespace }}"
+    values_files:
+      -  /tmp/datadog-values.yaml
+
 
 
 # - name: Wait for Datadog Agent pod to be created
 #   shell: |
-#     kubectl get pods -n istio-system -l app=datadog --no-headers
+#     kubectl get pods -n {{ k8_namespace }} -l app=datadog --no-headers
 #   register: datadog_pods_raw
 #   retries: 10
 #   delay: 10
@@ -40,7 +48,7 @@
 
 # - name: Get Datadog Agent pod status
 #   shell: |
-#     kubectl get pods -n istio-system -l app=datadog -o jsonpath="{.items[0].status.phase}"
+#     kubectl get pods -n {{ k8_namespace }} -l app=datadog -o jsonpath="{.items[0].status.phase}"
 #   register: datadog_status
 #   changed_when: false
 #   failed_when: datadog_status.stdout not in ["Running", "Succeeded"]

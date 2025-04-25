@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: {{ .Values.global.namespace }}
+data:
+  nginx.conf: |
+    events {}
+
+    http {
+      upstream python-web-app {
+        server {{ .Values.global.label.python_app_service }}.{{ .Values.global.namespace }}.svc.cluster.local:{{ .Values.global.port.python_app_port }};  
+ 
+      }
+
+      server {
+        listen 0.0.0.0:{{ .Values.global.port.nginx_load_balancer }};
+        server_name simple-nginx-deployment;  
+
+        location / {
+          proxy_pass http://python-web-app; 
+        }
+      }
+    }
