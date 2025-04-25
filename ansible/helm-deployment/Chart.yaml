@@ -13,3 +13,6 @@ dependencies:
   - name: istio-deployment
     version: 0.1.0
     repository: "file://charts/istio-deployment"
+  - name: ngrok
+    version: 0.1.0
+    repository: "file://charts/ngrok-setup"

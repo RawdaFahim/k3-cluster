@@ -6,6 +6,9 @@ global:
   label:
     python_app_service: python-app-service
     nginx_load_balancer: nginx-service
+  istio:
+    istio_gateway: istio-ingressgateway 
+    port: 80
 
 
 
@@ -47,7 +50,6 @@ istio-deployment:
   service:
     protocol_name: http
     protocol: HTTP
-    port: 80
     allowed_hosts: "*"
   gateway_name: nginx-gateway
   grafana:
@@ -56,3 +58,15 @@ istio-deployment:
   prefix: 
     grafana: /
     nginx: /nginx
+
+ngrok:
+  authToken: ""
+  secret_name: ngrok-secret
+  deployment:
+    label:
+      app: ngrok
+    replicaCount: 1
+    image:
+      repository: ngrok/ngrok
+      tag: latest
+

@@ -8,7 +8,7 @@ spec:
     istio: ingressgateway  
   servers:
   - port:
-      number: {{ .Values.service.port }} 
+      number: {{ .Values.global.istio.port }} 
       name: {{ .Values.service.protocol_name }} 
       protocol: {{ .Values.service.protocol }} 
     hosts:

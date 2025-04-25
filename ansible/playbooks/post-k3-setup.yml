@@ -41,5 +41,4 @@
     - role: roles/grafana_setup
     - role: roles/deploy_helm
     - role: roles/datadog_setup
-    # - role: roles/prometheus_setup
-    # - role: roles/ngrok_setup
+    - role: roles/prometheus_setup

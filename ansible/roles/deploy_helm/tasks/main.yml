@@ -33,6 +33,9 @@
       --set global.namespace={{ k3s_namespace }} \
       --set global.label.python_app_service={{ python_app.service_name }} \
       --set global.label.nginx_load_balancer={{ nginx_app.service_name }} \
+      --set global.istio_gateway={{ istio.ingress_gateway.name }}\
+      --set global.istio.port={{ istio.ingress_gateway.service.ports[0].port }}\
+      --set ngrok.authToken={{ ngrok.NGROK_AUTHTOKEN }}\
       full-helm-deployment /tmp/helm-deployment
   args:
     chdir: /tmp

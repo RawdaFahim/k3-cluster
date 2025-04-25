@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.label.app }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas:  {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.label.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.label.app }}
+    spec:
+      containers:
+      - name: ngrok
+        image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}" 
+        env:
+        - name: NGROK_AUTHTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret_name }}
+              key: NGROK_AUTHTOKEN
+        args: ["http", "--region=eu", "{{ .Values.global.istio_gateway }}.{{ .Values.global.namespace }}.svc.cluster.local:{{ .Values.global.istio.port }}"]
+
