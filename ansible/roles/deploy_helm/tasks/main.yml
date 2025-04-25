@@ -5,6 +5,7 @@
 #       - Python application with APM agent
 #       - Nginx reverse proxy
 #       - Istio Gateway and VirtualService configuration
+#       - Setup ngrok to expose the gateway with public URL
 #   - Using the Helm module to install and configure resources.
 #   - Waiting for Istio components to become ready.
 #   - Verifying that the required deployments for nginx and python app are successfully created.

@@ -47,3 +47,8 @@ grafana:
     port: 3000
     url: http://localhost/
     admin_password: admin
+
+
+# ==== Ngrok ====
+ngrok:
+  NGROK_AUTHTOKEN: "2vwqHVzU50BzmEsDzsbstrqXyzq_4oa5DXtFmv6SVW3cKmqbF"
