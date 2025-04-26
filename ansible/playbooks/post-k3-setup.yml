@@ -33,6 +33,9 @@
     istio_version: "{{ istio.version }}"
     istio_dir: "/tmp/istio-{{ istio_version }}"
     ansible_roles_path: "{{ playbook_dir }}/../roles"
+  vars_files:
+    - "{{ playbook_dir }}/../group_vars/vault.yml"
+    - "{{ playbook_dir }}/../group_vars/all.yml"
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   roles:

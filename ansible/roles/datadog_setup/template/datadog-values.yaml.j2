@@ -39,7 +39,7 @@
 # ------------------------------------------------------------------------------
 
 datadog:
-  apiKey: "{{ datadog.api_key }}" 
+  apiKey: "{{ datadog_keys.api_key }}" 
   site: "{{ datadog.site | default('datadoghq.com') }}"  
   clusterName: "{{ k3s_namespace }}"
   istio:

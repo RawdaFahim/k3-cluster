@@ -15,7 +15,17 @@ The structure of the project is as follows:
     - **playbooks/**: Contains the Ansible playbook files.
       - **post-k3s-setup.yml**: This playbook is run after K3s installation to configure Istio, deploy the web app, and additional setup.
     - **inventory.yml**: The Ansible inventory file that defines the target servers for the setup, such as K3s server and agent nodes.
-    - **group_vars/all.yml**: This file contains global variables that apply to all hosts in the Ansible inventory. It serves as a central location to define values shared across multiple playbooks and roles. Variables defined in `all.yml` can include configurations such as Kubernetes settings, Helm chart versions, API keys, and other system-wide parameters. The values in this file are automatically loaded by Ansible and can be referenced throughout the playbook execution.
+    - **group_vars/**:
+      - **all.yml**  
+        This file contains global variables that apply to all hosts in the Ansible inventory.  
+        It serves as a central location to define values shared across multiple playbooks and roles.  
+        Variables defined in `all.yml` include configurations such as Kubernetes settings, Helm chart versions, system parameters, and other general values.  
+        These variables are automatically loaded by Ansible and can be referenced anywhere during playbook execution.
+      - **/vault.yml**  
+        This file securely stores sensitive information, such as API keys for services like **Datadog** and **ngrok**.  
+        It is encrypted using **Ansible Vault**, which ensures that the sensitive data remains protected even if the repository is shared or stored publicly.  
+        Ansible Vault encrypts the entire file, and it can only be decrypted using a password that you set when encrypting.  
+        Vaulted variables can be accessed just like normal variables during playbook runs once the vault password is provided or configured.
     - **roles/**: This folder contains the roles referenced by the playbook `post-k3-setup.yml`.
       - **helm_setup/**: This role installs and configures Helm, the Kubernetes package manager, which is used to deploy Istio, Grafana, and other tools.
       - **istio_install/**: This role installs and configures Istio on the K3s cluster using Helm, including the setup of Istio's default configurations, gateway, and sidecar proxies.
@@ -72,7 +82,6 @@ The structure of the project is as follows:
 
 | Key                                                | Description                                                                 |
 |-----------------------------------------------------|-----------------------------------------------------------------------------|
-| `datadog.api_key`                                   | Your Datadog API key. Replace with your actual key.                         |
 | `datadog.site`                                      | The Datadog site (e.g., `datadoghq.com` or `datadoghq.eu`).                |
 | `datadog.clusterName`                               | The name of your Kubernetes cluster.                                        |
 | `datadog.istio.enabled`                             | Set to `true` to enable Istio metrics collection.                           |
@@ -110,9 +119,19 @@ The structure of the project is as follows:
 | `grafana.service.url`               | The URL to access Grafana (e.g., `http://localhost/`).                      |
 | `grafana.service.admin_password`    | The admin password for Grafana.                                             |
 
+</details>
+
+
+<details>
+  <summary>Ansible vault (`ansible/group_vars/vault.yml`)</summary>
+
+#### Datadog Configuration
+| Key                       | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| `datadog_keys.api_key`    | Datadog API KEY (replace with your actual key).                      |                
 ---
 
-### 🌐 Ngrok Configuration
+### Ngrok Configuration
 
 | Key                       | Description                                                                 |
 |---------------------------|-----------------------------------------------------------------------------|
@@ -210,6 +229,18 @@ Before running the playbooks, ensure that you have the following prerequisites:
 - Ansible 2.9+ installed on your local machine or control node.
 - A working SSH connection to your target servers (the K3s server and agent nodes).
 - Customize `inventory.yml` and `group_vars/all.yml` with values specific to your environment.
+- Replace `group_vars/vault.yml` with specific values for API Keys using the command below:
+```bash
+ansible-vault create group_vars/vault.yml
+## You'll be promted to add password
+## After creating the file make sure to add the values in this format:
+# ==== Datadog ====
+datadog_keys:
+  api_key: "test"
+# ==== Ngrok ====
+ngrok:
+  NGROK_AUTHTOKEN: "test"
+```
 - Initialize and update the k3s-ansible submodule using the commands below:
 ```
 git submodule init
@@ -250,7 +281,7 @@ After installing k3s and starting your own cluster. Run the post-setup playbook 
 
 ```bash
 cd ansible
-ansible-playbook -i inventory.yml playbooks/post-k3-setup.yml
+ansible-playbook -i inventory.yml playbooks/post-k3-setup.yml --ask-vault-pass
 ```
 
 ## 4. Verify deployment

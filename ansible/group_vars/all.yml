@@ -14,7 +14,6 @@ nginx_app:
 
 # ==== Datadog ====
 datadog:
-  api_key: "test"   # Replace with your actual Datadog API key
   site: "datadoghq.com"              # Datadog site (e.g., 'datadoghq.com' or 'datadoghq.eu')
   clusterName: "default"             # Kubernetes cluster name
   istio:
@@ -53,6 +52,3 @@ grafana:
     admin_password: admin
 
 
-# ==== Ngrok ====
-ngrok:
-  NGROK_AUTHTOKEN: "test"

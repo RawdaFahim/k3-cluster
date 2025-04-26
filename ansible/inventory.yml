@@ -3,10 +3,10 @@ k3s_cluster:
   children:
     server:
       hosts:
-        192.168.68.20:
+        192.168.68.22:
     agent:
       hosts:
-        192.168.68.21:
+        192.168.68.23:
   # Required Vars
   vars:
     ansible_port: 22
