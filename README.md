@@ -35,15 +35,19 @@ The structure of the project is as follows:
 
 #### Explanation of the Inventory Configuration
 
-- **k3s_cluster**: The main group containing your cluster.
-- **server**: The group of server nodes. The server node is the master node of the K3s cluster.
-- **agent**: The group of agent nodes that will join the K3s cluster.
-- **ansible_port**: The SSH port to connect to the nodes (default is `22`).
-- **ansible_user**: The SSH user that Ansible will use to connect to the nodes. In this case, it is set to `ubuntu`.
-- **k3s_version**: The version of K3s to install on the nodes. You can update it to the desired version.
-- **token**: The secret token used to join the agent nodes to the server node.
-- **api_endpoint**: The endpoint to access the K3s API server. It defaults to the first server node.
-- **extra_server_args**: Extra arguments passed to the K3s server during installation, such as enabling secrets encryption and configuring audit logging.
+
+| Key                        | Description                                                                 |
+|----------------------------|-----------------------------------------------------------------------------|
+| `k3s_cluster`               | The main group containing your cluster.                                     |
+| `server`                    | The group of server nodes. The server node is the master node of the K3s cluster. |
+| `agent`                     | The group of agent nodes that will join the K3s cluster.                    |
+| `ansible_port`              | The SSH port to connect to the nodes (default is `22`).                     |
+| `ansible_user`              | The SSH user that Ansible will use to connect to the nodes. In this case, it is set to `ubuntu`. |
+| `k3s_version`               | The version of K3s to install on the nodes. You can update it to the desired version. |
+| `token`                     | The secret token used to join the agent nodes to the server node.           |
+| `api_endpoint`              | The endpoint to access the K3s API server. It defaults to the first server node. |
+| `extra_server_args`         | Extra arguments passed to the K3s server during installation, such as enabling secrets encryption and configuring audit logging. |
+
 </details> 
 
 <details>
@@ -65,48 +69,55 @@ The structure of the project is as follows:
 
 #### Datadog Configuration
 
-- **datadog**:
-  - **api_key**: Your Datadog API key.
-  - **site**: The Datadog site (e.g., `datadoghq.com` or `datadoghq.eu`).
-  - **clusterName**: The name of your Kubernetes cluster.
-  - **istio_enabled**: Set to `true` to enable Istio metrics collection.
-  - **env**: The environment tag (e.g., `production`, `staging`).
-  - **team**: The team tag (e.g., `devops`, `backend`).
-  - **logs_enabled**: Set to `true` to enable log collection.
-  - **container_collect_all**: Set to `true` to collect logs from all containers.
-  - **container_collect_using_files**: Set to `true` to collect logs using files from containers.
-  - **apm_enabled**: Set to `true` to enable APM (Application Performance Monitoring).
-  - **profiling_enabled**: Set to `true` to enable profiling for performance insights.
-  - **agent_image_name**: The Datadog agent container image name (e.g., `datadog/agent`).
-  - **agent_image_tag**: The Datadog agent container image tag (e.g., `latest`).
 
-#### Istio Configuration
+| Key                                                | Description                                                                 |
+|-----------------------------------------------------|-----------------------------------------------------------------------------|
+| `datadog.api_key`                                   | Your Datadog API key. Replace with your actual key.                         |
+| `datadog.site`                                      | The Datadog site (e.g., `datadoghq.com` or `datadoghq.eu`).                |
+| `datadog.clusterName`                               | The name of your Kubernetes cluster.                                        |
+| `datadog.istio.enabled`                             | Set to `true` to enable Istio metrics collection.                           |
+| `datadog.apm.enabled`                               | Set to `true` to enable APM (Application Performance Monitoring).           |
+| `datadog.tags.env`                                  | Environment tag (e.g., `production`, `staging`).                            |
+| `datadog.tags.team`                                 | Team tag for grouping (e.g., `devops`, `backend`).                          |
+| `datadog.logs.enabled`                              | Set to `true` to enable log collection.                                     |
+| `datadog.logs.container_collect_all`                | Set to `true` to collect logs from all containers.                          |
+| `datadog.logs.container_collect_using_files`        | Set to `true` to collect logs using container log files.                    |
+| `datadog.profiling_enabled`                         | Set to `"true"` to enable profiling for performance insights.               |
+| `datadog.agent_image_name`                          | Datadog Agent container image name (e.g., `datadog/agent`).                 |
+| `datadog.agent_image_tag`                           | Datadog Agent container image tag (e.g., `latest`).                         |
 
-- **istio**:
-  - **version**: The Istio version to install (e.g., `1.22.0`).
-  - **ingress_gateway**:
-    - **name**: The name of the Istio ingress gateway (e.g., `istio-ingressgateway`).
-    - **service**:
-      - **type**: The type of Kubernetes service for the ingress gateway (e.g., `NodePort`).
-      - **ports**:
-        - **port**: The port on which the ingress gateway will listen (e.g., `80`).
-        - **targetPort**: The target port for the application (e.g., `80`).
-        - **nodePort**: The NodePort for accessing the service (e.g., `30080`).
-        - **name**: The name of the port (e.g., `http`).
 
-#### Grafana Configuration
+###  Istio Configuration
 
-- **grafana**:
-  - **service**:
-    - **type**: The type of Kubernetes service for Grafana (e.g., `ClusterIP`).
-    - **port**: The port for Grafana (e.g., `3000`).
-    - **url**: The URL to access Grafana (e.g., `http://localhost/`).
-    - **admin_password**: The admin password for Grafana.
+| Key                              | Description                                                                 |
+|----------------------------------|-----------------------------------------------------------------------------|
+| `istio.version`                  | The Istio version to install (e.g., `1.22.0`).                             |
+| `istio.ingress_gateway.name`     | The name of the Istio ingress gateway (e.g., `istio-ingressgateway`).      |
+| `istio.ingress_gateway.service.type` | The type of Kubernetes service for the ingress gateway (e.g., `NodePort`). |
+| `istio.ingress_gateway.service.ports.port` | The port on which the ingress gateway will listen (e.g., `80`). |
+| `istio.ingress_gateway.service.ports.targetPort` | The target port for the application (e.g., `80`). |
+| `istio.ingress_gateway.service.ports.nodePort` | The NodePort for accessing the service (e.g., `30080`). |
+| `istio.ingress_gateway.service.ports.name` | The name of the port (e.g., `http`). |
 
-#### Ngrok Configuration
+---
 
-- **ngrok**:
-  - **NGROK_AUTHTOKEN**: Your Ngrok authtoken (replace with your actual token).
+### Grafana Configuration
+
+| Key                                 | Description                                                                 |
+|-------------------------------------|-----------------------------------------------------------------------------|
+| `grafana.service.type`              | The type of Kubernetes service for Grafana (e.g., `ClusterIP`).             |
+| `grafana.service.port`              | The port for Grafana (e.g., `3000`).                                        |
+| `grafana.service.url`               | The URL to access Grafana (e.g., `http://localhost/`).                      |
+| `grafana.service.admin_password`    | The admin password for Grafana.                                             |
+
+---
+
+### 🌐 Ngrok Configuration
+
+| Key                       | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| `ngrok.NGROK_AUTHTOKEN`    | Your Ngrok authtoken (replace with your actual token).                      |
+
 </details>
 
 <details>

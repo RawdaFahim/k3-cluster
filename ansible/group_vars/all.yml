@@ -17,13 +17,17 @@ datadog:
   api_key: "test"   # Replace with your actual Datadog API key
   site: "datadoghq.com"              # Datadog site (e.g., 'datadoghq.com' or 'datadoghq.eu')
   clusterName: "default"             # Kubernetes cluster name
-  istio_enabled: true                # Enable Istio metrics collection
-  env: "production"                  # Environment tag (can be production, staging, etc.)
-  team: "devops"                     # Team tag for Datadog (can be devops, backend, etc.)
-  logs_enabled: true                 # Enable log collection
-  container_collect_all: true        # Collect logs from all containers
-  container_collect_using_files: true # Collect logs using files from containers
-  apm_enabled: true                  # Enable APM (Application Performance Monitoring)
+  istio:
+    enabled: true                # Enable Istio metrics collection
+  apm:
+    enabled: true                  # Enable APM (Application Performance Monitoring)
+  tags:
+    env: "production"                  # Environment tag (can be production, staging, etc.)
+    team: "devops"                     # Team tag for Datadog (can be devops, backend, etc.)
+  logs:
+    enabled: true                 # Enable log collection
+    container_collect_all: true        # Collect logs from all containers
+    container_collect_using_files: true # Collect logs using files from containers
   profiling_enabled: "true"          # Enable profiling for performance insights
   agent_image_name: "datadog/agent"  # Datadog Agent container image name
   agent_image_tag: "latest"          # Datadog Agent container image tag (latest, etc.)
@@ -51,4 +55,4 @@ grafana:
 
 # ==== Ngrok ====
 ngrok:
-  NGROK_AUTHTOKEN: "2vwqHVzU50BzmEsDzsbstrqXyzq_4oa5DXtFmv6SVW3cKmqbF"
+  NGROK_AUTHTOKEN: "test"

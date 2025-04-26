@@ -43,27 +43,25 @@ datadog:
   site: "{{ datadog.site | default('datadoghq.com') }}"  
   clusterName: "{{ k3s_namespace }}"
   istio:
-    enabled: "{{ datadog.istio_enabled }}"
+    enabled: "{{ datadog.istio.enabled }}"
+  apm:
+    enabled: "{{ datadog.apm.enabled }}"
 
   # Additional configurations (optional)
   tags:
-    - env: "{{ datadog.env }}"
-    - team: "{{ datadog.team }}"
+    - env: "{{ datadog.tags.env }}"
+    - team: "{{ datadog.tags.team }}"
   logs:
-    enabled: "{{ datadog.logs_enabled }}"
-    containerCollectAll: "{{ datadog.container_collect_all }}"
-    containerCollectUsingFiles: "{{ datadog.container_collect_using_files }}"  
+    enabled: "{{ datadog.logs.enabled }}"
+    containerCollectAll: "{{ datadog.logs.container_collect_all }}"
+    containerCollectUsingFiles: "{{ datadog.logs.container_collect_using_files }}"  
+  env:
+    - name: DD_PROFILING_ENABLED
+      value: "{{ datadog.profiling_enabled  }}"
 
-apm:
-  enabled: "{{ datadog.apm_enabled }}"
-
-env:
-  - name: DD_PROFILING_ENABLED
-    value: "{{ datadog.profiling_enabled  }}"
-
-agents:
-  containers:
-    agent:
-      image:
-        name: "{{ datadog.agent_image_name | default('datadog/agent') }}"
-        tag: "{{ datadog.agent_image_tag | default('latest') }}"
+  agents:
+    containers:
+      agent:
+        image:
+          name: "{{ datadog.agent_image_name | default('datadog/agent') }}"
+          tag: "{{ datadog.agent_image_tag | default('latest') }}"

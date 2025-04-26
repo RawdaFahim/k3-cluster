@@ -11,6 +11,13 @@
 # This role is for setting up a  monitoring solution in a 
 # k3s cluster.
 # ------------------------------------------------------------------------------
+- name: Wait for ngrok deployment to finish rolling out
+  shell: kubectl rollout status deployment/ngrok -n {{ k3s_namespace }}
+  register: rollout_status
+  retries: 10
+  delay: 5
+  until: rollout_status.rc == 0
+  run_once: true
 
 
 - name: Get ngrok pod IP
