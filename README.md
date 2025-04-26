@@ -123,73 +123,81 @@ The structure of the project is as follows:
 <details>
   <summary>Helm Umbrella Chart Values (`ansible/helm_deployment/values.yml`)</summary>
 
-### 🔧 Global Configuration
+### Global Configuration
 
 The `global` section defines shared values accessible by all subcharts. These are commonly used for namespaces, port configurations, and service labels.
 
-- **namespace**: Kubernetes namespace where all components will be deployed  
-  **(Overridden from `all.yml`: `k3s_namespace` using `--set global.namespace`)**
-- **port**:
-  - **python_app_port**: Port exposed by the Python app
-  - **nginx_load_balancer**: Port exposed by the Nginx load balancer
-- **label**:
-  - **python_app_service**: Service name for the Python app  
-    **(Overridden from `all.yml`: `python_app.service_name` using `--set global.label.python_app_service`)**
-  - **nginx_load_balancer**: Service name for the Nginx app  
-    **(Overridden from `all.yml`: `nginx_app.service_name` using `--set global.label.nginx_load_balancer`)**
-- **istio**:
-  - **istio_gateway**: Name of the Istio ingress gateway  
-    **(Overridden from `all.yml`: `istio.ingress_gateway.name` using `--set global.istio_gateway`)**
-  - **port**: Port used by the Istio ingress gateway  
-    **(Overridden from `all.yml`: `istio.ingress_gateway.service.ports[0].port` using `--set global.istio.port`)**
+### Kubernetes Configuration
+
+| Key                            | Description                                                                 |
+|--------------------------------|-----------------------------------------------------------------------------|
+| `namespace`                    | Kubernetes namespace where all components will be deployed.                |
+|                                | **(Overridden from `all.yml`: `k3s_namespace` using `--set global.namespace`)** |
+| `port.python_app_port`         | Port exposed by the Python app.                                             |
+| `port.nginx_load_balancer`     | Port exposed by the Nginx load balancer.                                   |
+| `label.python_app_service`     | Service name for the Python app.                                           |
+|                                | **(Overridden from `all.yml`: `python_app.service_name` using `--set global.label.python_app_service`)** |
+| `label.nginx_load_balancer`    | Service name for the Nginx app.                                            |
+|                                | **(Overridden from `all.yml`: `nginx_app.service_name` using `--set global.label.nginx_load_balancer`)** |
+| `istio.istio_gateway`          | Name of the Istio ingress gateway.                                         |
+|                                | **(Overridden from `all.yml`: `istio.ingress_gateway.name` using `--set global.istio_gateway`)** |
+| `istio.port`                   | Port used by the Istio ingress gateway.                                    |
+|                                | **(Overridden from `all.yml`: `istio.ingress_gateway.service.ports[0].port` using `--set global.istio.port`)** |
 
 ---
 
-### 🐍 Python App Configuration (`sample-python-app`)
+### Python App Configuration (`sample-python-app`)
 
 This section corresponds to the `sample-python-app` Helm **subchart** and includes values specific to the deployment of the sample Python application.
 
-- **label.app**: Label used to identify the Python app
-- **replicaCount**: Number of replicas for the app
-- **image**: Docker image configuration
-- **env**: Environment variables for Datadog integration and app metadata
-- **service**: Service type and protocol
+| Key                         | Description                                                                 |
+|-----------------------------|-----------------------------------------------------------------------------|
+| `label.app`                  | Label used to identify the Python app.                                      |
+| `replicaCount`               | Number of replicas for the app.                                             |
+| `image`                      | Docker image configuration.                                                 |
+| `env`                        | Environment variables for Datadog integration and app metadata.             |
+| `service`                    | Service type and protocol.                                                  |
 
 ---
 
-### 🌐 Nginx Load Balancer Configuration (`nginx-load-balancer`)
+### Nginx Load Balancer Configuration (`nginx-load-balancer`)
 
 This section belongs to the `nginx-load-balancer` Helm **subchart**, responsible for deploying your Nginx reverse proxy.
 
-- **label.app**: Label for Nginx
-- **replicaCount**: Number of replicas
-- **image**: Docker image configuration
-- **service**: Service protocol and type
+| Key                         | Description                                                                 |
+|-----------------------------|-----------------------------------------------------------------------------|
+| `label.app`                  | Label for Nginx.                                                            |
+| `replicaCount`               | Number of replicas.                                                         |
+| `image`                      | Docker image configuration.                                                 |
+| `service`                    | Service protocol and type.                                                  |
 
 ---
 
-### 🚏 Istio Gateway Configuration (`istio-deployment`)
+### Istio Gateway Configuration (`istio-deployment`)
 
 This section configures the `istio-deployment` Helm **subchart**, which manages Istio resources like gateways and virtual services.
 
-- **service**: Protocol setup and allowed hosts
-- **gateway_name**: Custom gateway name
-- **grafana**: Internal access settings for Grafana
-- **prefix**: URL path prefixes for routes
+| Key                         | Description                                                                 |
+|-----------------------------|-----------------------------------------------------------------------------|
+| `service`                    | Protocol setup and allowed hosts.                                           |
+| `gateway_name`               | Custom gateway name.                                                        |
+| `grafana`                    | Internal access settings for Grafana.                                       |
+| `prefix`                     | URL path prefixes for routes.                                               |
 
 ---
 
-### 🌍 Ngrok Tunnel Configuration (`ngrok`)
+### Ngrok Tunnel Configuration (`ngrok`)
 
 This section is used by the `ngrok` Helm **subchart** to expose services to the public internet.
 
-- **authToken**: Ngrok authentication token  
-  **(Overridden from `all.yml`: `ngrok.NGROK_AUTHTOKEN` using `--set ngrok.authToken`)**
-- **secret_name**: Kubernetes secret name
-- **deployment**:
-  - **label.app**: Label for the ngrok deployment
-  - **replicaCount**: Number of ngrok agent replicas
-  - **image**: Docker image for the ngrok agent
+| Key                        | Description                                                                 |
+|----------------------------|-----------------------------------------------------------------------------|
+| `authToken`                | Ngrok authentication token.                                                |
+|                            | **(Overridden from `all.yml`: `ngrok.NGROK_AUTHTOKEN` using `--set ngrok.authToken`)** |
+| `secret_name`              | Kubernetes secret name.                                                     |
+| `deployment.label.app`     | Label for the ngrok deployment.                                             |
+| `deployment.replicaCount`  | Number of ngrok agent replicas.                                            |
+| `deployment.image`         | Docker image for the ngrok agent.                                           |
 
 </details>
 
