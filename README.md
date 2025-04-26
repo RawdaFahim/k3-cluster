@@ -21,7 +21,7 @@ The structure of the project is as follows:
         It serves as a central location to define values shared across multiple playbooks and roles.  
         Variables defined in `all.yml` include configurations such as Kubernetes settings, Helm chart versions, system parameters, and other general values.  
         These variables are automatically loaded by Ansible and can be referenced anywhere during playbook execution.
-      - **/vault.yml**  
+      - **vault.yml**  
         This file securely stores sensitive information, such as API keys for services like **Datadog** and **ngrok**.  
         It is encrypted using **Ansible Vault**, which ensures that the sensitive data remains protected even if the repository is shared or stored publicly.  
         Ansible Vault encrypts the entire file, and it can only be decrypted using a password that you set when encrypting.  
