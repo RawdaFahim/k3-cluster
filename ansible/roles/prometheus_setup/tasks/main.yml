@@ -1,57 +1,29 @@
-# ------------------------------------------------------------------------------
-# Role: prometheus_setup
-# Description: This role sets up Prometheus for monitoring and integrates it with Grafana
-# to provide observability into the k3s cluster. The tasks involved include:
-#   - Retrieving the public ngrok URL to enable external access to Grafana.
-#   - Starting Prometheus by applying a raw YAML manifest from the Istio GitHub repository.
-#   - Adding Prometheus as a data source in Grafana via an API call, allowing Grafana to 
-#     collect and visualize Prometheus metrics.
-#   - Importing a pre-configured Grafana dashboard via API to visualize Prometheus metrics.
-#
-# This role is for setting up a  monitoring solution in a 
-# k3s cluster.
-# ------------------------------------------------------------------------------
-- name: Wait for ngrok deployment to finish rolling out
-  shell: kubectl rollout status deployment/ngrok -n {{ k3s_namespace }}
-  register: rollout_status
-  retries: 10
-  delay: 5
-  until: rollout_status.rc == 0
-  run_once: true
+
+- name: Create PersistentVolume and PersistentVolumeClaim for Prometheus
+  include_tasks: create_pv_pvc.yaml
+
+- name: Add prometheus-community repo
+  command: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  args:
+    creates: /root/.cache/helm/repository/prometheus-community-index.yaml
+
+- name: Update Helm repo
+  command: helm repo update
 
 
-- name: Get ngrok pod IP
-  shell: "kubectl get pod -n {{ k3s_namespace }} -l app=ngrok -o jsonpath='{.items[0].status.podIP}'"
-  register: ngrok_ip
-  run_once: true
+- name: Copy prometheus-pvc.yaml to the target node
+  copy:
+    src: templates/prometheus-values.yaml
+    dest: /tmp/prometheus-values.yaml
 
-- name: Get ngrok tunnel URL using curl
-  shell: "curl -s http://{{ ngrok_ip.stdout }}:4040/api/tunnels | jq -r '.tunnels[0].public_url'"
-  register: ngrok_public_url
-  run_once: true
-
-- name: Print ngrok tunnel URL
-  debug:
-    msg: "Ngrok URL: {{ ngrok_public_url.stdout }}"
-
-
-- name: Start Prometheus
-  shell: kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.21/samples/addons/prometheus.yaml
-  
-- name: Add Prometheus as Grafana datasource
-  command: >
-    curl -X POST "{{ ngrok_public_url.stdout }}/api/datasources"
-    -u admin:{{ grafana.service.admin_password }}
-    -H "Content-Type: application/json"
-    -d '{"name":"Prometheus","type":"prometheus","url":"http://prometheus.{{ k3s_namespace }}.svc.cluster.local:9090","access":"proxy","basicAuth":false,"isDefault":true}'
+- name: Deploy Prometheus with NFS PVC
+  community.kubernetes.helm:
+    name: prometheus
+    chart_ref: prometheus-community/kube-prometheus-stack
+    release_namespace: "{{ k3s_namespace }}"
+    values_files:
+      - "/tmp/prometheus-values.yaml"
 
 
-- name: Import Grafana dashboard
-  command: >
-    curl -X POST "{{ ngrok_public_url.stdout }}/api/dashboards/import"
-    -u admin:{{ grafana.service.admin_password }}
-    -H "Content-Type:application/json"
-    -d @/tmp/grafana-dashboard.json
-  register: curl_output
-  failed_when: curl_output.rc != 0 or '"error"' in curl_output.stdout or '"message"' in curl_output.stdout
+
 

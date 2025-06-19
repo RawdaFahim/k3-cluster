@@ -1,0 +1,12 @@
+
+- name: Copy cron.yaml
+  copy:
+    src: files/cron.yaml
+    dest: /tmp/cron.yaml
+
+- name: Apply PVC manifest using kubectl
+  command: kubectl apply -f /tmp/cron.yaml
+
+
+
+

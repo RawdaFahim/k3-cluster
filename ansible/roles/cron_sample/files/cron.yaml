@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: istio-clean-cronjob
+  namespace: istio-system
+spec:
+  schedule: "*/5 * * * *" 
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: istio-cron-container
+            image: curlimages/curl:latest
+            command:
+              - /bin/sh
+              - -c
+              - |
+                echo "Starting job..."
+                # Simulate some work (replace with your actual task)
+                sleep 10
+                echo "Job done. Shutting down Istio proxy..."
+                # Tell Istio Envoy sidecar to quit gracefully
+                curl -sS --fail --retry 5 --retry-delay 1 http://localhost:15020/quitquitquit
+                echo "Proxy shutdown request sent. Exiting main container."
+          restartPolicy: Never

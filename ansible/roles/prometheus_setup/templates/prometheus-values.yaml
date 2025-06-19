@@ -1,0 +1,42 @@
+prometheusOperator:
+  patch:
+    podAnnotations:
+      sidecar.istio.io/inject: "false"
+  admissionWebhooks:
+    patch:
+      podAnnotations:
+        "sidecar.istio.io/inject": "false"
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    podMetadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+
+    # Disable default storage so we can use our custom one
+    storageSpec: {}
+
+    additionalVolumes:
+      - name: prometheus-storage-volume
+        persistentVolumeClaim:
+          claimName: prometheus-nfs-pvc
+
+    additionalVolumeMounts:
+      - name: prometheus-storage-volume
+        mountPath: /prometheus
+
+alertmanager:
+  alertmanagerSpec:
+    podMetadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+
+admissionWebhooks:
+  patch:
+    podAnnotations:
+      sidecar.istio.io/inject: "false"
+  createSecret:
+    podAnnotations:
+      sidecar.istio.io/inject: "false"
+

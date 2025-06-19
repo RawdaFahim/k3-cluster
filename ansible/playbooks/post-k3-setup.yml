@@ -26,6 +26,57 @@
 # - prometheus_setup: (optional) Installs Prometheus for metrics collection
 # - ngrok_setup: (optional) Exposes local services over secure tunnels
 
+- name: Setup NFS server for Prometheus
+  hosts: nfs_server
+  become: true
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install NFS server
+      apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Create export directory
+      file:
+        path: /srv/nfs/prometheus
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: '0755'
+        recurse: yes
+
+    - name: Ensure export entry exists in /etc/exports
+      lineinfile:
+        path: /etc/exports
+        line: "/srv/nfs/prometheus *(rw,sync,no_subtree_check,no_root_squash)"
+        state: present
+        create: yes
+        insertafter: EOF
+
+    - name: Apply export changes
+      command: exportfs -rav
+
+    - name: Restart NFS server
+      systemd:
+        name: nfs-kernel-server
+        state: restarted
+        enabled: yes
+
+
+- name: Install NFS client on all nodes
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Install nfs-common
+      apt:
+        name: nfs-common
+        state: present
+        update_cache: true
+
+        
 - name: Post k3s install - Setup Istio and deploy manifests
   hosts: server
   become: yes
@@ -33,6 +84,7 @@
     istio_version: "{{ istio.version }}"
     istio_dir: "/tmp/istio-{{ istio_version }}"
     ansible_roles_path: "{{ playbook_dir }}/../roles"
+    ansible_python_interpreter: "/usr/bin/python3"
   vars_files:
     - "{{ playbook_dir }}/../group_vars/vault.yml"
     - "{{ playbook_dir }}/../group_vars/all.yml"
@@ -41,7 +93,11 @@
   roles:
     - role: roles/helm_setup
     - role: roles/istio_install
-    - role: roles/grafana_setup
     - role: roles/deploy_helm
-    - role: roles/datadog_setup
+    # # # - role: roles/datadog_setup
+    - role: roles/grafana_setup
     - role: roles/prometheus_setup
+    - role: roles/cron_sample
+
+
+
